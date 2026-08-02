@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IRON OPS | Gym Management Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#c3f400",
+                    "on-error": "#690005",
+                    "on-surface": "#e2e2e2",
+                    "tertiary-container": "#e4e2e1",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-dim": "#121414",
+                    "primary-fixed-dim": "#abd600",
+                    "secondary-fixed": "#e5e2e1",
+                    "inverse-on-surface": "#2f3131",
+                    "on-primary-fixed-variant": "#3c4d00",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "on-tertiary-container": "#656464",
+                    "inverse-surface": "#e2e2e2",
+                    "error": "#ffb4ab",
+                    "surface-container": "#1e2020",
+                    "tertiary": "#ffffff",
+                    "tertiary-fixed": "#e4e2e1",
+                    "on-primary-container": "#556d00",
+                    "surface-container-lowest": "#0c0f0f",
+                    "on-background": "#e2e2e2",
+                    "error-container": "#93000a",
+                    "on-tertiary": "#303030",
+                    "on-primary": "#283500",
+                    "surface-container-highest": "#333535",
+                    "inverse-primary": "#506600",
+                    "on-surface-variant": "#c4c9ac",
+                    "primary-fixed": "#c3f400",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "outline-variant": "#444933",
+                    "secondary": "#c8c6c5",
+                    "surface-variant": "#333535",
+                    "on-secondary-container": "#b7b5b4",
+                    "primary": "#ffffff",
+                    "on-tertiary-fixed": "#1b1c1c",
+                    "on-primary-fixed": "#161e00",
+                    "on-secondary-fixed-variant": "#474746",
+                    "background": "#121414",
+                    "surface": "#121414",
+                    "surface-bright": "#38393a",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-high": "#282a2b",
+                    "outline": "#8e9379",
+                    "surface-tint": "#abd600",
+                    "surface-container-low": "#1a1c1c",
+                    "secondary-container": "#474746",
+                    "on-secondary": "#313030"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-sm": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #121414;
+            color: #e2e2e2;
+            -webkit-font-smoothing: antialiased;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .glass-card {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #333333;
+        }
+        .kinetic-border {
+            border-left: 4px solid #c3f400;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121414;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-container font-headline-md text-headline-md">fitness_center</span>
+<h1 class="font-headline-md text-headline-md font-black text-primary-container tracking-tighter">IRON OPS</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:bg-surface-container-highest transition-colors p-2 rounded-full active:scale-95 duration-100">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+<div class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-highest transition-colors px-sm py-xs rounded-lg active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary-container">account_circle</span>
+<span class="hidden md:block font-label-md text-label-md">Gym Admin</span>
+</div>
+</div>
+</header>
+<!-- NavigationDrawer (Desktop Only) -->
+<nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full z-40 bg-surface-container border-r border-outline-variant w-72 pt-20">
+<div class="px-md pb-lg border-b border-outline-variant mb-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim">store</span>
+</div>
+<div>
+<h2 class="font-label-md text-label-md text-on-surface">Iron Paradise HQ</h2>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span> Active
+                    </p>
+</div>
+</div>
+</div>
+<div class="flex flex-col space-y-1">
+<a class="bg-primary-container text-on-primary-container rounded-lg mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">group</span> Members
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">payments</span> Billing
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">calendar_today</span> Classes
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">draw</span> Waivers
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all mx-2 my-1 px-md py-3 flex items-center gap-md font-label-md text-label-md mt-auto mb-20" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-20 pb-24 lg:pb-8 lg:pl-80 px-md min-h-screen">
+<!-- Header Section -->
+<section class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Command Center</h2>
+<p class="font-body-md text-on-surface-variant">Real-time tactical overview for Iron Paradise HQ.</p>
+</section>
+<!-- Bento Hub -->
+<div class="bento-grid">
+<!-- Quick Actions - Desktop Vertical / Mobile Horizontal -->
+<div class="col-span-12 lg:col-span-3 order-2 lg:order-1 flex flex-col gap-md">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-xs">Quick Actions</h3>
+<button class="bg-primary-container text-on-primary-fixed hover:bg-primary-fixed-dim transition-all p-lg rounded-xl flex items-center justify-between group active:scale-95">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined font-bold">person_add</span>
+<span class="font-label-md text-label-md uppercase font-bold">Add Member</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<button class="bg-surface-container text-on-surface border border-outline-variant hover:bg-surface-container-highest transition-all p-lg rounded-xl flex items-center justify-between group active:scale-95">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-md text-label-md uppercase">Scan QR</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<button class="bg-surface-container text-on-surface border border-outline-variant hover:bg-surface-container-highest transition-all p-lg rounded-xl flex items-center justify-between group active:scale-95">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-md text-label-md uppercase">Schedule Class</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+<!-- Central Metrics -->
+<div class="col-span-12 lg:col-span-9 order-1 lg:order-2 grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Total Members Metric -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between kinetic-border">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Total Members</span>
+<span class="text-primary-container font-bold flex items-center gap-1 text-sm bg-primary-container/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12%
+                        </span>
+</div>
+<div class="mt-md">
+<h4 class="font-headline-lg text-headline-lg text-on-surface">1,482</h4>
+<div class="w-full h-1 bg-surface-container-highest mt-md overflow-hidden rounded-full">
+<div class="h-full bg-primary-container w-4/5 rounded-full"></div>
+</div>
+<p class="text-xs text-on-surface-variant mt-sm">Growth trajectory: Stable (Last 30 days)</p>
+</div>
+</div>
+<!-- Active Check-ins -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Active Check-ins</span>
+<span class="material-symbols-outlined text-on-surface-variant">group</span>
+</div>
+<div class="mt-md">
+<h4 class="font-headline-lg text-headline-lg text-on-surface">64</h4>
+<div class="flex -space-x-3 mt-md overflow-hidden">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-cover bg-center" data-alt="A gritty, cinematic portrait of a focused athlete with intense eyes, captured in low-key lighting with high contrast black and electric lime accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCGvlSoiyKA9Xd-Iw13ch9qa1GRf72cBq1LLWOIH-fdIhLqrqjNwwfmZfye5Z0rZjaBcTdw-x0o-mplQR_sPxsiE0yTwi8m7mgMR_QMvLhHJQdelsNOmQrPtZ2ZQ41EXW5RZnvDxQzbIQNsfFqLqYLUGuWBxHRHQk8Bcto3kaffQwMVfBrFPjmyzyyLMf578rhgvw1bgtpuoed5upGoJD1I-m5jkFe0QvIHxFY4ir61whweDACGaS4k8w')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-cover bg-center" data-alt="A macro shot of a muscular person lifting heavy iron weights in a dark, atmospheric industrial gym setting. Intense lighting highlights sweat and grit." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuARQMX4G0UfyIWltIF-CijeSpq9Ca1OEwem8sR_Rx_g9bjV-di-9OBJM8jnJTFW4PSGyp94fo3OPwa9zWqAyhjHt9kASP43cSbmuw359lb86zLMaCEgYQhKm6OLsYj5aF8q7p27-yutC_P100jMk_xgWKlKNKAcURVanA6zOy_v4c-ELlekzNX0bg3PqeIe7oUnuZhKF4biin5b1pf8j2LSoji88twzdISw0MEGTYzhT0elMtWCcPw2yg')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-cover bg-center" data-alt="A high-intensity action shot of a person performing a deadlift in a professional weight room, lit by neon green industrial lighting on dark charcoal backgrounds." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC63Gn-tAgs3bEjmlwHzGciSApa8EhtjfKag2pk9uD246lAzpnXJVJpUUaiYuk-yF6D02HE5cKZJLWECNCQRB6q-GBmQhpz7dkE2BlY7iSanvzKbh1yo9RxzcsWQhUCXYFDNrdXglnmHsTMMFvTLSlInBhl-nQFvd7ndIxd5AEsO9VsiXyBWX7oPzhfgYxS5QEcl2QKv61G8FpY92WSBLN3H1FVPmC6lcNxhVN37Nla9ZASEHjU3-VWEA')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-[10px] text-on-surface font-bold">+61</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-sm">Current gym occupancy: 72% capacity</p>
+</div>
+</div>
+<!-- Capacity Chart / Activity Feed (Wider on MD+) -->
+<div class="col-span-12 md:col-span-2 glass-card p-lg rounded-xl relative overflow-hidden h-64">
+<div class="absolute inset-0 opacity-10">
+<!-- Simple SVG Graph Background -->
+<svg class="w-full h-full preserve-3d" preserveaspectratio="none" viewbox="0 0 1000 200">
+<path d="M0 200 L0 150 Q100 120 200 160 T400 140 T600 180 T800 120 T1000 100 L1000 200 Z" fill="#c3f400"></path>
+</svg>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Weekly Attendance</h3>
+<div class="flex gap-2">
+<span class="bg-primary-container w-3 h-3 rounded-full"></span>
+<span class="text-xs text-on-surface-variant">Last 7 Days</span>
+</div>
+</div>
+<div class="flex items-end justify-between h-32 gap-2">
+<div class="w-full bg-surface-container-highest rounded-t h-1/2 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+<div class="w-full bg-surface-container-highest rounded-t h-2/3 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+<div class="w-full bg-surface-container-highest rounded-t h-1/3 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+<div class="w-full bg-surface-container-highest rounded-t h-3/4 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+<div class="w-full bg-primary-container rounded-t h-[90%] hover:brightness-110 transition-all cursor-pointer"></div>
+<div class="w-full bg-surface-container-highest rounded-t h-1/2 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+<div class="w-full bg-surface-container-highest rounded-t h-2/5 hover:bg-primary-container/40 transition-colors cursor-pointer"></div>
+</div>
+<div class="flex justify-between mt-sm text-[10px] text-on-surface-variant font-bold uppercase tracking-tighter">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Upcoming Classes Section -->
+<div class="col-span-12 lg:col-span-12 order-3">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Upcoming Classes</h3>
+<a class="text-primary-container font-label-md text-label-md hover:underline" href="#">View Schedule</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Class Card 1 -->
+<div class="glass-card rounded-xl overflow-hidden group hover:border-primary-container transition-colors duration-300">
+<div class="h-32 bg-cover bg-center relative" data-alt="A gritty close-up of heavy battle ropes in motion, dust particles illuminated by sharp, focused spotlighting in a dark warehouse-style gym. Colors are moody blacks and industrial greys." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBuvYzhOuRpbzramraEJTRkWycknYnNKHr44IBfaEMD_oT57-H17Wc_G3SIgHz1LAOJk9xjQTNSfvs86CjX_AF2n-DOm_SILUDftMIQD-LlsJeQUPxETMvhKkb_bekEOEZHOVhEUI4q2Hg2Ylzf0Va_nTt4-MXiTweC03MPpC31GpZbgkF2qP05hLFx79YEidkKD4-gsj1tquhnjxHLWGpIX4hxHvcgJ7xYeH6V2lIPUSien9i21T15Mg')">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-md left-md">
+<span class="bg-primary-container text-on-primary-fixed text-[10px] font-black px-2 py-0.5 rounded uppercase">Full Capacity</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">HIIT Power Hour</h4>
+<span class="text-on-surface-variant font-label-sm text-label-sm">05:30 PM</span>
+</div>
+<div class="flex items-center gap-sm mb-md text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Coach Sarah J.</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="w-2/3 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-full"></div>
+</div>
+<span class="text-xs font-bold text-on-surface">20/20</span>
+</div>
+</div>
+</div>
+<!-- Class Card 2 -->
+<div class="glass-card rounded-xl overflow-hidden group hover:border-primary-container transition-colors duration-300">
+<div class="h-32 bg-cover bg-center relative" data-alt="A row of professional chrome dumbbells neatly arranged on a rack, reflecting soft ambient purple and green lights in a modern high-end gym at night." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAB1M7-jMKge2Sj91id17BkUfIr1vo_bWsccP8iVTuH-2h8e06KOVmgDn4Y0PP9ncTw0aH_jCbS5a6gU3m5cKVxKi2voJQ1Lhe_6lSzs-lzNT31CwiZoI1mbh6r8I8g6jpMKrWQiimx5NUngFYQN6GSITzMbp6oQImerd8zZ-O1j1Fdu2TI6w0uxRuj6B1Byyhjjj6B-Sm6E6Bg--b1z9iGGtPB9VMRa6sAL1e3cRQYQg_s6f0q_sq_Yg')">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-md left-md">
+<span class="bg-surface-container-highest text-on-surface text-[10px] font-black px-2 py-0.5 rounded uppercase">4 Slots Open</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Strength Lab</h4>
+<span class="text-on-surface-variant font-label-sm text-label-sm">06:15 PM</span>
+</div>
+<div class="flex items-center gap-sm mb-md text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Coach Mike R.</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="w-2/3 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[75%]"></div>
+</div>
+<span class="text-xs font-bold text-on-surface">12/16</span>
+</div>
+</div>
+</div>
+<!-- Class Card 3 -->
+<div class="glass-card rounded-xl overflow-hidden group hover:border-primary-container transition-colors duration-300">
+<div class="h-32 bg-cover bg-center relative" data-alt="An empty, high-tech yoga studio with matte black flooring and a single electric lime yoga mat in the center, atmospheric light rays coming through high windows." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxBqlHL4EnBpOCuwukZk0qcBQ5SyExLS3yOYMUKdwcsgc6Zx-j9FQPS0DeBDYaQHNkqa3D_bLMII3Jnne5pFoSHF9JVgW-fMXVfD9y43PVZvd2xMv21YgwlAmdtgAoGIsmSUfUQcSQvjW4YcHzL_wY-N18rtfPMkYTiXOqb3E4adIYketMQ_RJ4Ps5qKeRa_NaCp9XEWVUH4CLOrg9soLWujVqFvw3nI8O4V0ajwIoHkFmcX-pChS75g')">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-md left-md">
+<span class="bg-surface-container-highest text-on-surface text-[10px] font-black px-2 py-0.5 rounded uppercase">Starts Soon</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Recovery Flow</h4>
+<span class="text-on-surface-variant font-label-sm text-label-sm">07:00 PM</span>
+</div>
+<div class="flex items-center gap-sm mb-md text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Coach Elena V.</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="w-2/3 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[20%]"></div>
+</div>
+<span class="text-xs font-bold text-on-surface">5/25</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe bg-surface-container-lowest border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center text-primary-container font-bold group active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant group active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Members</span>
+</a>
+<div class="relative -top-4">
+<button class="bg-primary-container text-on-primary-fixed w-14 h-14 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined text-3xl font-bold">qr_code_scanner</span>
+</button>
+</div>
+<a class="flex flex-col items-center justify-center text-on-surface-variant group active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-sm text-label-sm">Classes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant group active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-sm text-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and hover effects
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.96)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+
+        // Simple fade-in animation for cards
+        window.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                card.style.transition = `all 0.4s ease-out ${index * 0.1}s`;
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50);
+            });
+        });
+    </script>
+</body></html>

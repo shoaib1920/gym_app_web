@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IRON OPS | Member Scan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#c3f400",
+                    "on-error": "#690005",
+                    "on-surface": "#e2e2e2",
+                    "tertiary-container": "#e4e2e1",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-dim": "#121414",
+                    "primary-fixed-dim": "#abd600",
+                    "secondary-fixed": "#e5e2e1",
+                    "inverse-on-surface": "#2f3131",
+                    "on-primary-fixed-variant": "#3c4d00",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "on-tertiary-container": "#656464",
+                    "inverse-surface": "#e2e2e2",
+                    "error": "#ffb4ab",
+                    "surface-container": "#1e2020",
+                    "tertiary": "#ffffff",
+                    "tertiary-fixed": "#e4e2e1",
+                    "on-primary-container": "#556d00",
+                    "surface-container-lowest": "#0c0f0f",
+                    "on-background": "#e2e2e2",
+                    "error-container": "#93000a",
+                    "on-tertiary": "#303030",
+                    "on-primary": "#283500",
+                    "surface-container-highest": "#333535",
+                    "inverse-primary": "#506600",
+                    "on-surface-variant": "#c4c9ac",
+                    "primary-fixed": "#c3f400",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "outline-variant": "#444933",
+                    "secondary": "#c8c6c5",
+                    "surface-variant": "#333535",
+                    "on-secondary-container": "#b7b5b4",
+                    "primary": "#ffffff",
+                    "on-tertiary-fixed": "#1b1c1c",
+                    "on-primary-fixed": "#161e00",
+                    "on-secondary-fixed-variant": "#474746",
+                    "background": "#121414",
+                    "surface": "#121414",
+                    "surface-bright": "#38393a",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-high": "#282a2b",
+                    "outline": "#8e9379",
+                    "surface-tint": "#abd600",
+                    "surface-container-low": "#1a1c1c",
+                    "secondary-container": "#474746",
+                    "on-secondary": "#313030"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-sm": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .camera-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            clip-path: polygon(0% 0%, 0% 100%, 15% 100%, 15% 30%, 85% 30%, 85% 70%, 15% 70%, 15% 100%, 100% 100%, 100% 0%);
+        }
+        .scan-line {
+            height: 2px;
+            background: #c3f400;
+            box-shadow: 0 0 15px #c3f400;
+            animation: scan 2.5s infinite linear;
+        }
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(320px); }
+            100% { transform: translateY(0); }
+        }
+        .toast-entrance {
+            animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes slideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .corner-border {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-color: #c3f400;
+            border-width: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-container font-headline-md">fitness_center</span>
+<h1 class="font-headline-md text-headline-md font-black text-primary-container tracking-tighter">IRON OPS</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm hover:bg-surface-container-highest transition-colors rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<span class="material-symbols-outlined text-primary-container">account_circle</span>
+</div>
+</header>
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full z-40 bg-surface-container border-r border-outline-variant w-72 pt-16">
+<div class="p-lg flex items-center gap-md border-b border-outline-variant mb-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Gym Admin</p>
+<p class="text-xs text-on-surface-variant">Iron Paradise HQ</p>
+</div>
+</div>
+<div class="flex flex-col flex-1 overflow-y-auto">
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-container-highest mx-2 my-1 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-container-highest mx-2 my-1 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Members</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 bg-primary-container text-on-primary-container mx-2 my-1 rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-md text-label-md">Scan QR</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-container-highest mx-2 my-1 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Classes</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-container-highest mx-2 my-1 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<div class="mt-auto pb-md">
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-container-highest mx-2 my-1 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="lg:pl-72 pt-16 h-screen flex flex-col relative overflow-hidden bg-black">
+<!-- Camera Viewport Simulation -->
+<div class="flex-1 relative">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-60" data-alt="A first-person view of a high-end industrial gym entrance. The lighting is moody with dark charcoal walls and neon lime accents. In the foreground, a slightly blurred smartphone held by a hand is approaching a modern tablet-based scanning kiosk. The atmosphere is energetic and professional with clean architectural lines and visible weightlifting equipment in the distant background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATcQghmJ8rfR3-8-qhJnMzxmobN5Cx6r_dCzwMtMYe_egAZMPIhsO16gPntbUmp34CxlB5aCRutzacePEqpSzMq7_6OV3R-7_itXtx9PYEmc835mEPXtwYS6j-WUVqxtt1vKZiREz5_7CpRN1pPdk40byhatg_sHifJjnnIKLn9zS5TZ3W0IuWCEDmTBslt8_kF2_I57k3rsQzXeQb3hzj6ZhRBkFSrnCB_RjvYJ8qfgN5kvTKDPFxsw')">
+</div>
+</div>
+<!-- Dimmed Overlay with Scanning Frame -->
+<div class="absolute inset-0 z-10 camera-overlay"></div>
+<!-- Scanning UI Elements -->
+<div class="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none">
+<div class="w-72 h-72 md:w-80 md:h-80 relative border-2 border-white/20">
+<!-- Scan Corners -->
+<div class="corner-border top-0 left-0 border-t-4 border-l-4"></div>
+<div class="corner-border top-0 right-0 border-t-4 border-r-4"></div>
+<div class="corner-border bottom-0 left-0 border-b-4 border-l-4"></div>
+<div class="corner-border bottom-0 right-0 border-b-4 border-r-4"></div>
+<!-- Animated Scan Line -->
+<div class="scan-line absolute top-0 left-0 right-0"></div>
+</div>
+<div class="mt-lg text-center px-md">
+<h2 class="font-headline-sm text-headline-sm text-white mb-xs">Scan Member Code</h2>
+<p class="text-on-surface-variant font-label-md">Position the QR code within the frame</p>
+</div>
+</div>
+<!-- Manual Entry & Controls -->
+<div class="absolute bottom-12 md:bottom-24 left-0 w-full z-30 flex flex-col items-center px-md gap-md">
+<button class="bg-surface-container-highest/80 backdrop-blur-md border border-outline-variant text-white px-lg py-sm rounded-full flex items-center gap-sm hover:bg-surface-container-high transition-all active:scale-95" onclick="toggleManualEntry()">
+<span class="material-symbols-outlined">keyboard</span>
+<span class="font-label-md uppercase tracking-wider">Manual Entry</span>
+</button>
+<div class="flex gap-lg">
+<button class="w-12 h-12 rounded-full bg-black/40 border border-white/20 flex items-center justify-center text-white hover:bg-black/60">
+<span class="material-symbols-outlined">flash_on</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-black/40 border border-white/20 flex items-center justify-center text-white hover:bg-black/60">
+<span class="material-symbols-outlined">switch_camera</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Success Toast Container (Hidden by default) -->
+<div class="hidden fixed bottom-24 lg:bottom-12 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-32px)] max-w-md" id="success-toast">
+<div class="toast-entrance bg-primary-container p-md rounded-xl shadow-2xl flex items-center gap-md border-b-4 border-black/10">
+<div class="w-12 h-12 rounded-full bg-on-primary-container/20 flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-sm text-on-primary-container leading-none mb-1">Check-in Confirmed</h4>
+<p class="text-on-primary-container/80 font-bold" id="member-name">Marcus Sterling</p>
+</div>
+<button class="p-sm text-on-primary-container/50 hover:text-on-primary-container" onclick="hideToast()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Manual Entry Modal -->
+<div class="hidden fixed inset-0 z-[70] flex items-center justify-center p-md bg-black/80 backdrop-blur-sm" id="manual-modal">
+<div class="bg-surface-container border border-outline-variant w-full max-w-sm rounded-xl p-lg">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm text-primary-container">Manual Check-In</h3>
+<button class="text-on-surface-variant hover:text-on-surface" onclick="toggleManualEntry()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-md">
+<div>
+<label class="block text-label-sm text-on-surface-variant mb-sm uppercase tracking-widest">Member ID or Phone</label>
+<input class="w-full bg-surface-container-low border-2 border-outline rounded-lg px-md py-sm focus:border-primary-container focus:ring-0 text-white transition-all outline-none" id="manual-id" placeholder="e.g. 102938" type="text"/>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-md rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all" onclick="triggerSuccess()">
+                        CONFIRM CHECK-IN
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe bg-surface-container-lowest border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-transform duration-150 active:scale-90" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-transform duration-150 active:scale-90" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Members</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container font-bold transition-transform duration-150 active:scale-90" href="#">
+<div class="absolute -top-6 bg-primary-container p-sm rounded-full shadow-lg border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-on-primary">qr_code_scanner</span>
+</div>
+<span class="font-label-sm text-label-sm mt-4">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-transform duration-150 active:scale-90" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-sm text-label-sm">Classes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-transform duration-150 active:scale-90" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-sm text-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Simulation of scanning success
+        function triggerSuccess() {
+            const names = ["Marcus Sterling", "Elena Rodriguez", "Jackson Thorne", "Sarah Miller", "Dominic Vance"];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            
+            document.getElementById('member-name').textContent = randomName;
+            document.getElementById('manual-modal').classList.add('hidden');
+            document.getElementById('manual-id').value = '';
+            
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('hidden');
+            
+            // Haptic/Sound feedback simulation
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+
+            setTimeout(() => {
+                hideToast();
+            }, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.add('hidden');
+        }
+
+        function toggleManualEntry() {
+            const modal = document.getElementById('manual-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                document.getElementById('manual-id').focus();
+            }
+        }
+
+        // Mock scan every 8 seconds for visual demo if not using manual entry
+        let scanInterval = setInterval(() => {
+            if (document.getElementById('manual-modal').classList.contains('hidden') && 
+                document.getElementById('success-toast').classList.contains('hidden')) {
+                triggerSuccess();
+            }
+        }, 8000);
+
+        // Simple cleanup for demo
+        window.addEventListener('beforeunload', () => clearInterval(scanInterval));
+    </script>
+</body></html>

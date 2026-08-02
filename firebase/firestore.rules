@@ -1,0 +1,63 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(gymId) {
+      return request.auth != null && request.auth.uid == gymId;
+    }
+
+    // Mirrors backend/src/lib/subscriptionAccess.ts from the old Express
+    // version of this app — this is now the ONLY place access is decided,
+    // and it's enforced by Firestore's servers, not the client.
+    function hasAccess(gymId) {
+      let gym = get(/databases/$(database)/documents/gyms/$(gymId)).data;
+      return gym.subscriptionStatus == 'active'
+        || (gym.subscriptionStatus == 'trialing' && request.time < gym.trialEndsAt);
+    }
+
+    match /gyms/{gymId} {
+      // The owner can always read their own gym doc, even when access is
+      // revoked — that's how the app knows to show "Account Inactive"
+      // instead of just failing silently on every read.
+      allow read: if isOwner(gymId);
+
+      // First-login onboarding: the client creates its own gym doc, but
+      // can't hand itself an arbitrarily long trial. trialEndsAt has to
+      // land within a day of "now" as Firestore's server clock sees it —
+      // that range check (not a client-supplied value) is what actually
+      // stops a modified client from self-granting extended access.
+      allow create: if isOwner(gymId)
+        && request.resource.data.ownerFirebaseUid == gymId
+        && request.resource.data.subscriptionStatus == 'trialing'
+        && request.resource.data.trialEndsAt > request.time + duration.value(13, 'd')
+        && request.resource.data.trialEndsAt < request.time + duration.value(15, 'd');
+
+      // Owners can update their own display fields (name, fcmToken, ...),
+      // but can never grant themselves access — subscriptionStatus and
+      // trialEndsAt only ever change via the Admin SDK
+      // (admin-scripts/setGymStatus.ts), which authenticates with
+      // credentials that bypass these rules entirely, the same way the old
+      // backend's admin endpoint was a separate trust boundary from the
+      // gym owner's own login.
+      allow update: if isOwner(gymId)
+        && request.resource.data.subscriptionStatus == resource.data.subscriptionStatus
+        && request.resource.data.trialEndsAt == resource.data.trialEndsAt
+        && request.resource.data.ownerFirebaseUid == resource.data.ownerFirebaseUid;
+
+      allow delete: if false;
+
+      // Every business record — members, waivers, payers, plans,
+      // subscriptions, classes, bookings, check-ins — lives somewhere
+      // under here. One rule, re-checked on every single read/write, is
+      // what makes the kill switch immediate: the moment an admin flips
+      // subscriptionStatus, hasAccess() starts returning false and every
+      // one of these reads/writes gets rejected immediately — there's no
+      // separate per-collection gating that could drift out of sync, and
+      // no client-side path around it.
+      match /{document=**} {
+        allow read, write: if isOwner(gymId) && hasAccess(gymId);
+      }
+    }
+  }
+}

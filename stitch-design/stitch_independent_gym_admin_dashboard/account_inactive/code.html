@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account Inactive | IRON OPS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#c3f400",
+                    "on-error": "#690005",
+                    "on-surface": "#e2e2e2",
+                    "tertiary-container": "#e4e2e1",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-dim": "#121414",
+                    "primary-fixed-dim": "#abd600",
+                    "secondary-fixed": "#e5e2e1",
+                    "inverse-on-surface": "#2f3131",
+                    "on-primary-fixed-variant": "#3c4d00",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "on-tertiary-container": "#656464",
+                    "inverse-surface": "#e2e2e2",
+                    "error": "#ffb4ab",
+                    "surface-container": "#1e2020",
+                    "tertiary": "#ffffff",
+                    "tertiary-fixed": "#e4e2e1",
+                    "on-primary-container": "#556d00",
+                    "surface-container-lowest": "#0c0f0f",
+                    "on-background": "#e2e2e2",
+                    "error-container": "#93000a",
+                    "on-tertiary": "#303030",
+                    "on-primary": "#283500",
+                    "surface-container-highest": "#333535",
+                    "inverse-primary": "#506600",
+                    "on-surface-variant": "#c4c9ac",
+                    "primary-fixed": "#c3f400",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "outline-variant": "#444933",
+                    "secondary": "#c8c6c5",
+                    "surface-variant": "#333535",
+                    "on-secondary-container": "#b7b5b4",
+                    "primary": "#ffffff",
+                    "on-tertiary-fixed": "#1b1c1c",
+                    "on-primary-fixed": "#161e00",
+                    "on-secondary-fixed-variant": "#474746",
+                    "background": "#121414",
+                    "surface": "#121414",
+                    "surface-bright": "#38393a",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-high": "#282a2b",
+                    "outline": "#8e9379",
+                    "surface-tint": "#abd600",
+                    "surface-container-low": "#1a1c1c",
+                    "secondary-container": "#474746",
+                    "on-secondary": "#313030"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-sm": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121414;
+            color: #e2e2e2;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(195, 244, 0, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            animation: move-scanline 8s linear infinite;
+        }
+        @keyframes move-scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        .caution-border {
+            background: repeating-linear-gradient(
+                -45deg,
+                #c3f400,
+                #c3f400 10px,
+                #121414 10px,
+                #121414 20px
+            );
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Subtle Background Shader/Animation -->
+
+<div class="scanline pointer-events-none"></div>
+<!-- Top Bar (Stripped Down Version of TopAppBar) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-16 bg-surface dark:bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<h1 class="font-headline-md text-headline-md font-black text-primary-container tracking-tighter uppercase">IRON OPS</h1>
+</div>
+<div class="flex items-center">
+<button class="flex items-center gap-2 px-md py-sm rounded hover:bg-surface-container-highest transition-colors active:scale-95 duration-100 text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined">logout</span>
+<span class="hidden sm:inline">Log Out</span>
+</button>
+</div>
+</header>
+<!-- Main Lockdown Content -->
+<main class="flex-grow flex items-center justify-center p-md relative z-20">
+<div class="max-w-2xl w-full">
+<!-- Central Lockdown Card -->
+<div class="bg-surface-container border border-outline-variant p-lg md:p-xl rounded-xl relative overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.5)]">
+<!-- Caution Strip Accent -->
+<div class="absolute top-0 left-0 w-full h-1 caution-border opacity-60"></div>
+<!-- Status Icon -->
+<div class="flex justify-center mb-lg">
+<div class="w-20 h-20 rounded-full bg-error-container/20 border-2 border-error flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-error text-[40px]" style="font-variation-settings: 'FILL' 1;">lock_person</span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="text-center space-y-md">
+<h2 class="font-headline-lg text-headline-lg text-on-surface uppercase tracking-tight">Account Inactive</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto">
+                        Access to the <span class="text-primary-container font-bold">Iron Paradise HQ</span> administrative dashboard has been restricted. This typically occurs when a trial period expires or the subscription status is past-due.
+                    </p>
+</div>
+<!-- Information Bento Grid -->
+<div class="mt-xl grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="bg-surface-container-low p-md border border-outline-variant rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Status</p>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-headline-sm text-headline-sm text-error">SUSPENDED</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-md border border-outline-variant rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Next Step</p>
+<span class="font-headline-sm text-headline-sm text-on-surface">Update Billing</span>
+</div>
+</div>
+<!-- Action Block -->
+<div class="mt-xl flex flex-col sm:flex-row gap-md">
+<button class="flex-grow bg-primary-container text-on-primary-fixed font-label-md text-label-md py-lg rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+                        MANAGE SUBSCRIPTION
+                    </button>
+<button class="flex-grow border border-outline-variant text-on-surface font-label-md text-label-md py-lg rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-highest active:scale-95 transition-all">
+<span class="material-symbols-outlined">support_agent</span>
+                        CONTACT SUPPORT
+                    </button>
+</div>
+<!-- Footer Note -->
+<div class="mt-lg pt-md border-t border-outline-variant flex items-center justify-center gap-2 text-on-surface-variant font-label-sm">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Reference ID: OPS-9912-XPRD</span>
+</div>
+</div>
+<!-- Secondary Contextual Images (Subtle Atmospheric) -->
+<div class="mt-xl grid grid-cols-3 gap-md opacity-20 filter grayscale">
+<div class="h-24 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-contrast close-up of a heavy industrial gym dumbbell rack in a dark, moody environment. The lighting is low-key, emphasizing the cold metallic textures and shadows. Deep blacks and charcoal grays dominate the scene, reflecting a professional and intense weightlifting atmosphere. The visual style is sharp and modern-corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5aGrffokk8X5siRq_FdqWOBhddYNUcEQIIYwTjxcbfj_PzvSSi19aW5H1IGjypgmYhKaBB5oxmwF22KoVULADodowC-xJ6tecxGgtnV3ZP3D8i3BZik4jU_EdELLzQV-kkiudpduEK0J1zWoONa3FQhTATCFTZhqBYs-UfyRGhv94_JkT4cR-GJTPiFAnf2y01ZOPsH2AkQ1RDrtXHnxXzQLvp1-JNQRoo2WJp81iR5_pOGsSFJmmMA"/>
+</div>
+<div class="h-24 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="An atmospheric wide shot of a vast, empty warehouse-style gym at night. Silhouettes of high-end squat racks and strength equipment are visible under dim, industrial safety lighting. The mood is silent, authoritative, and resilient. Electric lime light accents from equipment displays cut through the deep dark background, creating a high-stakes, professional vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIbvn13hpT9sgxipeQyWZy_9PA9e02JU7xC5mNEdT8WwFzg_oMFKourqL5GDe_yC4NgPFlShcyPJ8mN_fgB97BZhpW5mbhdOMlMk_nBxpg3-qaxbkbbIR8NS2KnPRLNIXStQK9_EWePhcYh04aAgN5QAOcc7uICd7gbgA5XlKOjkEH2g0bwv-XQNTyFmzoUnOqghlG3yC8UGmnHPMdenRnQq2B49o5yy9aNOcofyXO4aa5gl83gCYrsA"/>
+</div>
+<div class="h-24 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A detailed macro shot of a gym entrance turnstile and electronic card reader glowing with a faint red warning light. The background is a dark, sleek administrative area with brushed metal finishes. The aesthetic is modern, tech-focused, and industrial, conveying a sense of restricted access and professional security in a high-performance training facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD86TgQ32RROdBMnm4RfvL1KwvvMGD673L9JBCCaMiUZDJ5NqDLvqi9pz5xP3ACHNADS8eMreRpthQDfASXrLuTXx0Zjs9COYbjF68ki1DAFqjailolWkLmYuaay5Yltb9RtxmG5_r91eVodI5tQ1msrH4NaLbNChWwY5mi1GKBQd1rMseuc8qiaIogATluFbdzRolsIrg5yCwSWi423ikd5IbMEEfTRXjK4G4yZcPMNuY-sdEfIWo6qQ"/>
+</div>
+</div>
+</div>
+</main>
+<!-- Blocked Navigation Shell (Empty/Suppressed as per requirements) -->
+<div class="fixed bottom-0 left-0 w-full h-1 caution-border opacity-20 pointer-events-none"></div>
+<script>
+        // Micro-interactions for the lockout screen
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Visual feedback for locked actions if needed
+                    console.log('Action attempted on restricted screen');
+                });
+            });
+
+            // Prevent any accidental navigation via keyboard shortcuts
+            window.onkeydown = function(e) {
+                if (e.key === "Tab") {
+                    // Optional: Trap focus within the modal for accessibility
+                }
+            };
+        });
+    </script>
+</body></html>

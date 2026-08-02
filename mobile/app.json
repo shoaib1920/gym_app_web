@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Gym Manager",
+    "slug": "gym-manager",
+    "scheme": "gymmanager",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gymmanager.app"
+    },
+    "android": {
+      "package": "com.gymmanager.app",
+      "permissions": ["CAMERA"]
+    },
+    "plugins": ["expo-camera", "expo-notifications"]
+  }
+}

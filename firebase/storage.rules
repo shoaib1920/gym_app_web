@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Only a signed-in gym owner can read or write member photos. There's
+    // no per-member auth in this app (see README) — the backend used to
+    // enforce per-gym isolation for everything else, and now Firestore
+    // rules do; this Storage rule only guards the raw file bytes, so it
+    // stays at "any authenticated owner" rather than scoped to a specific
+    // gym.
+    match /member-photos/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

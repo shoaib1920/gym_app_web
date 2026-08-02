@@ -1,0 +1,18 @@
+{
+  "name": "gym-app-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "admin-scripts",
+    "mobile",
+    "web"
+  ],
+  "scripts": {
+    "mobile:start": "npm run start --workspace=mobile",
+    "web:dev": "npm run dev --workspace=web",
+    "setup:firebase": "npm run setup-firebase --workspace=admin-scripts",
+    "set-gym-status": "npm run set-gym-status --workspace=admin-scripts",
+    "android": "npm run run:android --workspace=mobile",
+    "ios": "npm run run:ios --workspace=mobile"
+  }
+}

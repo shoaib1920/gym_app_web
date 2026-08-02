@@ -1,0 +1,19 @@
+{
+  "name": "admin-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "set-gym-status": "ts-node src/setGymStatus.ts",
+    "setup-firebase": "ts-node src/setupFirebase.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.3.1",
+    "google-auth-library": "^9.14.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
