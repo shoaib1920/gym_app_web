@@ -6,6 +6,7 @@ import { getFeeOverview } from "../firestore/subscriptions";
 import { listEquipment } from "../firestore/equipment";
 import type { FeeOverview } from "../firestore/types";
 import { Icon } from "../components/ui";
+import { formatCurrency } from "../lib/currency";
 
 const QUICK_ACTIONS = [
   { label: "Add Member", to: "/members/new", icon: "person_add" },
@@ -88,7 +89,7 @@ export default function DashboardPage() {
           <StatCard
             to="/fees?status=pending"
             label="Fee pending"
-            value={fees === null ? "—" : `$${(fees.pendingCents / 100).toFixed(2)}`}
+            value={fees === null ? "—" : formatCurrency(fees.pendingCents)}
             hint={fees === null ? "" : `${fees.pendingCount} payer${fees.pendingCount === 1 ? "" : "s"} overdue`}
             accent="error"
           />
@@ -96,7 +97,7 @@ export default function DashboardPage() {
           <StatCard
             to="/fees?status=paid"
             label="Fee collected"
-            value={fees === null ? "—" : `$${(fees.collectedCents / 100).toFixed(2)}`}
+            value={fees === null ? "—" : formatCurrency(fees.collectedCents)}
             hint={fees === null ? "" : `${fees.paidCount} payer${fees.paidCount === 1 ? "" : "s"} current`}
           />
 

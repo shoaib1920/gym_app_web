@@ -4,6 +4,7 @@ import { useGymId } from "../context/AuthContext";
 import { getFeeOverview } from "../firestore/subscriptions";
 import type { FeeOverview, FeeOverviewPayer } from "../firestore/types";
 import { EmptyState, Pill, PageHeader, PageSpinner, StatusPill } from "../components/ui";
+import { formatCurrency } from "../lib/currency";
 
 const STATUS_PILL: Record<FeeOverviewPayer["status"], "active" | "error"> = {
   paid: "active",
@@ -71,7 +72,7 @@ export default function FeeOverviewPage() {
                   {p.payerName}
                 </p>
                 <p className="mt-0.5 font-label-sm text-label-sm text-on-surface-variant">
-                  {p.planName ? `${p.planName} · $${(p.priceCents / 100).toFixed(2)}` : "Not on a plan"}
+                  {p.planName ? `${p.planName} · ${formatCurrency(p.priceCents)}` : "Not on a plan"}
                   {" · "}
                   <span className={p.status === "pending" ? "text-error" : ""}>{dueLabel(p)}</span>
                 </p>

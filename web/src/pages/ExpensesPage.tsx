@@ -3,6 +3,7 @@ import { useGymId } from "../context/AuthContext";
 import { createExpense, deleteExpense, listExpenses } from "../firestore/expenses";
 import type { Expense } from "../firestore/types";
 import { Button, EmptyState, ErrorText, Icon, Input, ListRow, Modal, PageHeader, PageSpinner } from "../components/ui";
+import { formatCurrency } from "../lib/currency";
 
 const CATEGORIES = ["Rent", "Utilities", "Equipment", "Staff", "Maintenance", "Marketing", "Other"];
 
@@ -67,7 +68,7 @@ export default function ExpensesPage() {
     <div>
       <PageHeader
         title="Expenses"
-        subtitle={`$${(thisMonthTotal / 100).toFixed(2)} spent this month`}
+        subtitle={`${formatCurrency(thisMonthTotal)} spent this month`}
         action={
           <Button onClick={() => setModalOpen(true)}>
             <Icon name="add" className="!text-lg" />
@@ -90,7 +91,7 @@ export default function ExpensesPage() {
               </p>
             </div>
             <div className="flex items-center gap-sm shrink-0">
-              <p className="font-headline text-headline-sm font-bold text-primary-container">${(e.amountCents / 100).toFixed(2)}</p>
+              <p className="font-headline text-headline-sm font-bold text-primary-container">{formatCurrency(e.amountCents)}</p>
               <button onClick={() => handleDelete(e.id)} className="text-on-surface-variant hover:text-error transition-colors p-xs">
                 <Icon name="delete" className="!text-lg" />
               </button>
@@ -114,7 +115,7 @@ export default function ExpensesPage() {
             ))}
           </select>
         </label>
-        <Input label="Amount (e.g. 49.99)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <Input label="Amount in Rs (e.g. 2500)" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
         <Input label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         <Input label="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} />
 

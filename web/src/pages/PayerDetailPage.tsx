@@ -8,6 +8,7 @@ import { createSubscription, getLatestSubscriptionForPayer } from "../firestore/
 import type { PayerFeeStatus } from "../firestore/subscriptions";
 import type { Member, MembershipPlan, PayerDetail as PayerDetailType } from "../firestore/types";
 import { Button, Icon, PageSpinner, StatusPill } from "../components/ui";
+import { formatCurrency } from "../lib/currency";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -113,7 +114,7 @@ export default function PayerDetailPage() {
           <>
             <div>
               <p className="font-label-md text-label-md text-on-surface">
-                {feeStatus.planName} · ${(feeStatus.priceCents / 100).toFixed(2)}
+                {feeStatus.planName} · {formatCurrency(feeStatus.priceCents)}
               </p>
               <p className={`font-label-sm text-label-sm ${feeStatus.isPaid ? "text-on-surface-variant" : "text-error"}`}>
                 {dueLabel(feeStatus)}
@@ -173,7 +174,7 @@ export default function PayerDetailPage() {
           >
             <p className="font-label-md text-label-md font-semibold text-on-surface">{p.name}</p>
             <p className="font-label-sm text-label-sm text-on-surface-variant">
-              ${(p.priceCents / 100).toFixed(2)} / {p.billingInterval}
+              {formatCurrency(p.priceCents)} / {p.billingInterval}
             </p>
           </button>
         ))}

@@ -3,6 +3,7 @@ import { useGymId } from "../context/AuthContext";
 import { listPlans, createPlan } from "../firestore/plans";
 import type { MembershipPlan } from "../firestore/types";
 import { Button, EmptyState, ErrorText, Icon, Input, ListRow, Modal, PageHeader, PageSpinner, Pill } from "../components/ui";
+import { formatCurrency } from "../lib/currency";
 
 const INTERVALS = ["day", "week", "month", "year"];
 
@@ -80,7 +81,7 @@ export default function PlansPage() {
               </p>
             </div>
             <p className="font-headline text-headline-sm font-bold text-primary-container">
-              ${(p.priceCents / 100).toFixed(2)}
+              {formatCurrency(p.priceCents)}
               <span className="text-on-surface-variant font-label-sm text-label-sm">/{p.billingInterval}</span>
             </p>
           </ListRow>
@@ -89,7 +90,7 @@ export default function PlansPage() {
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="New Membership Plan">
         <Input label="Plan name" value={name} onChange={(e) => setName(e.target.value)} />
-        <Input label="Price (e.g. 49.99)" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
+        <Input label="Price in Rs (e.g. 2500)" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
 
         <div className="mb-3 flex flex-wrap gap-2">
           {INTERVALS.map((i) => (
