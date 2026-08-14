@@ -57,7 +57,7 @@ export default function KioskPage() {
       </button>
 
       {!result ? (
-        <div className="w-full max-w-sm text-center">
+        <div className="w-full max-w-[26rem] text-center">
           <Icon name="fitness_center" filled className="!text-5xl text-primary-container" />
           <h1 className="mt-md font-headline text-headline-lg font-black text-on-surface">Check In</h1>
           <p className="mt-xs font-body-md text-body-md text-on-surface-variant">Enter your member code</p>
@@ -82,7 +82,7 @@ export default function KioskPage() {
           </form>
         </div>
       ) : (
-        <div className="w-full max-w-sm text-center">
+        <div className="w-full max-w-[26rem] text-center">
           <div
             className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full ${
               result.ok ? "bg-primary-container" : "bg-error-container"
