@@ -1,11 +1,63 @@
 import { getDoc, getDocs, query, where, writeBatch, doc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { memberRef, checkInsCol, membersCol, attendanceLogCol } from "./paths";
-import type { AttendanceSource } from "./types";
+import { findPayerIdForMember } from "./payers";
+import { getLatestSubscriptionForPayer } from "./subscriptions";
+import type { AttendanceSource, Member } from "./types";
 
 interface QrPayload {
   gymId: string;
   memberId: string;
+}
+
+export interface KioskFeeStatus {
+  state: "paid" | "overdue" | "no-plan";
+  label: string;
+  planName?: string;
+  periodEnd?: Date;
+}
+
+export interface KioskCheckInResult {
+  memberId: string;
+  fullName: string;
+  memberCode: string;
+  status: Member["status"];
+  memberSince: Date;
+  fee: KioskFeeStatus;
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * Mirrors the original gym_attendence_system's computeFeeStatus (see its
+ * services/feeService.js) so the kiosk still greets a member with their
+ * paid/overdue standing, not just a bare "checked in" confirmation. Fee
+ * status here isn't stored on the member directly — it's tracked on
+ * whichever payer's subscription covers them — so this walks
+ * member -> payer -> latest subscription.
+ */
+async function getKioskFeeStatus(gymId: string, memberId: string): Promise<KioskFeeStatus> {
+  const payerId = await findPayerIdForMember(gymId, memberId);
+  const status = payerId ? await getLatestSubscriptionForPayer(gymId, payerId) : null;
+  if (!status) {
+    return { state: "no-plan", label: "No payment on record" };
+  }
+
+  const daysDiff = Math.round((status.currentPeriodEnd.getTime() - Date.now()) / MS_PER_DAY);
+  if (daysDiff >= 0) {
+    return {
+      state: "paid",
+      label: daysDiff === 0 ? "Fee due today" : `${daysDiff} day${daysDiff === 1 ? "" : "s"} left`,
+      planName: status.planName,
+      periodEnd: status.currentPeriodEnd,
+    };
+  }
+  return {
+    state: "overdue",
+    label: `Overdue by ${-daysDiff} day${-daysDiff === 1 ? "" : "s"}`,
+    planName: status.planName,
+    periodEnd: status.currentPeriodEnd,
+  };
 }
 
 /**
@@ -59,10 +111,7 @@ export async function recordCheckIn(
  * instead of a staff member scanning a QR code. Same underlying write path
  * as recordCheckIn, just a different lookup.
  */
-export async function recordCheckInByCode(
-  gymId: string,
-  memberCode: string
-): Promise<{ memberId: string; fullName: string }> {
+export async function recordCheckInByCode(gymId: string, memberCode: string): Promise<KioskCheckInResult> {
   const trimmed = memberCode.trim();
   if (!trimmed) {
     throw new Error("Enter your member code");
@@ -74,8 +123,20 @@ export async function recordCheckInByCode(
   }
 
   const memberDoc = snap.docs[0];
-  const fullName = memberDoc.data().fullName;
-  await batchCheckIn(gymId, memberDoc.id, fullName, "kiosk");
+  const data = memberDoc.data();
+  const fullName = data.fullName;
 
-  return { memberId: memberDoc.id, fullName };
+  const [, fee] = await Promise.all([
+    batchCheckIn(gymId, memberDoc.id, fullName, "kiosk"),
+    getKioskFeeStatus(gymId, memberDoc.id),
+  ]);
+
+  return {
+    memberId: memberDoc.id,
+    fullName,
+    memberCode: data.memberCode ?? trimmed,
+    status: data.status ?? "active",
+    memberSince: data.createdAt?.toDate?.() ?? new Date(),
+    fee,
+  };
 }

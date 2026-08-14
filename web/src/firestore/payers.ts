@@ -56,6 +56,12 @@ export async function getPayer(gymId: string, payerId: string): Promise<PayerDet
   };
 }
 
+/** Reverse lookup of getPayer's member links — used by the kiosk to find whose subscription a member's fee status is tracked under. A member could in theory be linked to more than one payer; the first link found is what's shown. */
+export async function findPayerIdForMember(gymId: string, memberId: string): Promise<string | null> {
+  const snap = await getDocs(query(payerMemberLinksCol(gymId), where("memberId", "==", memberId)));
+  return snap.empty ? null : (snap.docs[0].data().payerId as string);
+}
+
 export async function linkMemberToPayer(
   gymId: string,
   payerId: string,
