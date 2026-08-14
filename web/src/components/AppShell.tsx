@@ -7,6 +7,8 @@ import { Icon } from "./ui";
 const MEMBERS_GROUP = [
   { label: "Members", to: "/members", icon: "group" },
   { label: "Front Desk Scanner", to: "/scanner", icon: "qr_code_scanner" },
+  { label: "Self Check-in Kiosk", to: "/kiosk", icon: "touch_app" },
+  { label: "Attendance Log", to: "/attendance", icon: "event_available" },
 ];
 
 const MANAGEMENT_GROUP = [
@@ -14,6 +16,7 @@ const MANAGEMENT_GROUP = [
   { label: "Payers & Billing", to: "/payers", icon: "payments" },
   { label: "Equipment", to: "/equipment", icon: "fitness_center" },
   { label: "Expenses", to: "/expenses", icon: "receipt_long" },
+  { label: "Import from Excel", to: "/import", icon: "upload_file" },
 ];
 
 const BOTTOM_NAV_ITEMS = [

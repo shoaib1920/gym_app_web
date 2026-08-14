@@ -8,11 +8,13 @@ export interface Gym {
   subscriptionStatus: SubscriptionStatus;
   trialEndsAt: Date | null;
   fcmToken?: string | null;
+  nextMemberSeq?: number;
   createdAt: Date;
 }
 
 export interface Member {
   id: string;
+  memberCode: string;
   fullName: string;
   dateOfBirth: string | null;
   email: string | null;
@@ -115,4 +117,14 @@ export interface FeeOverview {
   paidCount: number;
   pendingCount: number;
   payers: FeeOverviewPayer[];
+}
+
+export type AttendanceSource = "scanner" | "kiosk" | "import";
+
+export interface AttendanceLogEntry {
+  id: string;
+  memberId: string;
+  memberName: string;
+  checkedInAt: Date;
+  source: AttendanceSource;
 }

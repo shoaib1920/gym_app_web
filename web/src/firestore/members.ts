@@ -1,11 +1,25 @@
-import { getDoc, getDocs, query, orderBy, limit, updateDoc, writeBatch, serverTimestamp, doc } from "firebase/firestore";
+import {
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  updateDoc,
+  writeBatch,
+  runTransaction,
+  serverTimestamp,
+  Timestamp,
+  doc,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { membersCol, memberRef, waiversCol, checkInsCol } from "./paths";
+import { membersCol, memberRef, waiversCol, checkInsCol, gymRef } from "./paths";
 import type { Member, MemberDetail, Waiver, CheckIn } from "./types";
 
 function toMember(id: string, data: any): Member {
   return {
     id,
+    memberCode: data.memberCode ?? "",
     fullName: data.fullName,
     dateOfBirth: data.dateOfBirth ?? null,
     email: data.email ?? null,
@@ -48,6 +62,22 @@ export async function getMember(gymId: string, memberId: string): Promise<Member
   return { ...toMember(memberSnap.id, memberSnap.data()), waivers, checkIns };
 }
 
+/**
+ * Short, human-typeable code (e.g. "0007") assigned to every new member —
+ * used at the self check-in kiosk, where typing a Firestore doc id isn't an
+ * option. Backed by a counter on the gym doc, incremented inside a
+ * transaction so two members created at the same moment can't collide.
+ */
+async function nextMemberCode(gymId: string): Promise<string> {
+  const seq = await runTransaction(db, async (tx) => {
+    const gymSnap = await tx.get(gymRef(gymId));
+    const current = (gymSnap.data()?.nextMemberSeq as number | undefined) ?? 1;
+    tx.update(gymRef(gymId), { nextMemberSeq: current + 1 });
+    return current;
+  });
+  return String(seq).padStart(4, "0");
+}
+
 export interface CreateMemberInput {
   fullName: string;
   dateOfBirth?: string;
@@ -66,10 +96,12 @@ export interface CreateMemberInput {
  * guarantee the old backend's DB transaction gave: a member row never
  * exists without a signed waiver attached. */
 export async function createMemberWithWaiver(gymId: string, input: CreateMemberInput): Promise<string> {
+  const memberCode = await nextMemberCode(gymId);
   const batch = writeBatch(db);
   const memberDocRef = doc(membersCol(gymId));
 
   batch.set(memberDocRef, {
+    memberCode,
     fullName: input.fullName,
     dateOfBirth: input.dateOfBirth ?? null,
     email: input.email ?? null,
@@ -93,6 +125,13 @@ export async function createMemberWithWaiver(gymId: string, input: CreateMemberI
   return memberDocRef.id;
 }
 
+/** Kiosk lookup: a member types their own code, this resolves it to a doc. */
+export async function getMemberByCode(gymId: string, memberCode: string): Promise<Member | null> {
+  const snap = await getDocs(query(membersCol(gymId), where("memberCode", "==", memberCode)));
+  if (snap.empty) return null;
+  return toMember(snap.docs[0].id, snap.docs[0].data());
+}
+
 export async function updateMember(
   gymId: string,
   memberId: string,
@@ -111,4 +150,38 @@ export async function updateMember(
  */
 export function getMemberQrPayload(gymId: string, memberId: string): string {
   return JSON.stringify({ gymId, memberId });
+}
+
+export interface ImportMemberInput {
+  fullName: string;
+  dateOfBirth?: string;
+  email?: string;
+  phone?: string;
+  joinedAt?: Date;
+}
+
+/**
+ * Bulk-import counterpart to createMemberWithWaiver. Historical members
+ * from a spreadsheet never signed a waiver in this app, so — unlike normal
+ * signup — this doesn't create one; MemberDetail.waivers already renders
+ * fine as an empty array. createdAt is backdated to the sheet's join date
+ * when known, so "member since" reflects reality instead of import day.
+ */
+export async function importMember(gymId: string, input: ImportMemberInput): Promise<string> {
+  const memberCode = await nextMemberCode(gymId);
+  const memberDocRef = doc(membersCol(gymId));
+  await writeBatch(db)
+    .set(memberDocRef, {
+      memberCode,
+      fullName: input.fullName,
+      dateOfBirth: input.dateOfBirth ?? null,
+      email: input.email ?? null,
+      phone: input.phone ?? null,
+      profilePhotoUrl: null,
+      isMinor: false,
+      status: "active",
+      createdAt: input.joinedAt ? Timestamp.fromDate(input.joinedAt) : serverTimestamp(),
+    })
+    .commit();
+  return memberDocRef.id;
 }

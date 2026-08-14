@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import AppShell from "./components/AppShell";
 import LoginPage from "./pages/LoginPage";
@@ -18,6 +18,9 @@ import ScannerPage from "./pages/ScannerPage";
 import EquipmentPage from "./pages/EquipmentPage";
 import ExpensesPage from "./pages/ExpensesPage";
 import FeeOverviewPage from "./pages/FeeOverviewPage";
+import AttendancePage from "./pages/AttendancePage";
+import ImportPage from "./pages/ImportPage";
+import KioskPage from "./pages/KioskPage";
 
 /**
  * The app-access gate. Which subtree renders is driven entirely by
@@ -30,6 +33,7 @@ import FeeOverviewPage from "./pages/FeeOverviewPage";
  */
 export default function App() {
   const { state } = useAuth();
+  const location = useLocation();
 
   if (state.phase === "accessDenied") {
     return <InactiveAccountPage />;
@@ -42,6 +46,14 @@ export default function App() {
         <Route path="*" element={<LoginPage />} />
       </Routes>
     );
+  }
+
+  // Rendered outside AppShell, full-screen, on purpose: this is the
+  // front-desk kiosk terminal a member operates unattended, so it shouldn't
+  // expose the admin sidebar/nav the way every other authenticated route
+  // does. See KioskPage.tsx.
+  if (location.pathname === "/kiosk") {
+    return <KioskPage />;
   }
 
   return (
@@ -61,6 +73,8 @@ export default function App() {
         <Route path="/equipment" element={<EquipmentPage />} />
         <Route path="/expenses" element={<ExpensesPage />} />
         <Route path="/fees" element={<FeeOverviewPage />} />
+        <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/import" element={<ImportPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>

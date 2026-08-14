@@ -4,6 +4,7 @@ import { useGymId } from "../context/AuthContext";
 import { listMembers } from "../firestore/members";
 import { getFeeOverview } from "../firestore/subscriptions";
 import { listEquipment } from "../firestore/equipment";
+import { listTodayAttendance } from "../firestore/attendance";
 import type { FeeOverview } from "../firestore/types";
 import { Icon } from "../components/ui";
 import { formatCurrency } from "../lib/currency";
@@ -11,6 +12,7 @@ import { formatCurrency } from "../lib/currency";
 const QUICK_ACTIONS = [
   { label: "Add Member", to: "/members/new", icon: "person_add" },
   { label: "Scan QR", to: "/scanner", icon: "qr_code_scanner" },
+  { label: "Self Check-in Kiosk", to: "/kiosk", icon: "touch_app" },
 ];
 
 function StatCard({
@@ -45,11 +47,13 @@ export default function DashboardPage() {
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const [fees, setFees] = useState<FeeOverview | null>(null);
   const [attentionCount, setAttentionCount] = useState<number | null>(null);
+  const [checkedInToday, setCheckedInToday] = useState<number | null>(null);
 
   useEffect(() => {
     listMembers(gymId).then((m) => setMemberCount(m.length));
     getFeeOverview(gymId).then(setFees);
     listEquipment(gymId).then((items) => setAttentionCount(items.filter((i) => i.condition !== "good").length));
+    listTodayAttendance(gymId).then((entries) => setCheckedInToday(entries.length));
   }, [gymId]);
 
   return (
@@ -85,6 +89,13 @@ export default function DashboardPage() {
         {/* Stat cards */}
         <div className="col-span-12 lg:col-span-9 order-1 lg:order-2 grid grid-cols-1 md:grid-cols-2 gap-md">
           <StatCard to="/members" label="Total members" value={memberCount === null ? "—" : String(memberCount)} hint="Everyone registered at your gym." />
+
+          <StatCard
+            to="/attendance"
+            label="Checked in today"
+            value={checkedInToday === null ? "—" : String(checkedInToday)}
+            hint="Front desk scans, kiosk, and self check-ins."
+          />
 
           <StatCard
             to="/fees?status=pending"

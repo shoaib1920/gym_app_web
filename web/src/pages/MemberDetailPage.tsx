@@ -125,6 +125,11 @@ export default function MemberDetailPage() {
             </div>
           </div>
 
+          <div className="bg-surface-container-low p-md rounded-xl border border-outline-variant mb-md text-center">
+            <p className="text-on-surface-variant font-label-sm text-label-sm uppercase mb-1">Kiosk check-in code</p>
+            <p className="text-on-surface font-headline text-headline-sm font-bold tracking-[0.2em]">{member.memberCode || "—"}</p>
+          </div>
+
           <div className="grid grid-cols-2 gap-md mb-lg">
             <div className="bg-surface-container-low p-md rounded-xl border border-outline-variant">
               <p className="text-on-surface-variant font-label-sm text-label-sm uppercase mb-1">Email</p>

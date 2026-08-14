@@ -64,6 +64,32 @@ export async function createSubscription(gymId: string, input: CreateSubscriptio
   return docRef.id;
 }
 
+export interface ImportSubscriptionInput {
+  payerId: string;
+  planId: string;
+  memberIds: string[];
+  periodStart: Date;
+  periodEnd: Date;
+}
+
+/**
+ * Same shape as createSubscription, but for backfilling a subscription from
+ * a spreadsheet's own recorded dates instead of computing the period from
+ * "now" — an imported payment happened in the past, not at import time.
+ */
+export async function createImportedSubscription(gymId: string, input: ImportSubscriptionInput): Promise<string> {
+  const docRef = await addDoc(subscriptionsCol(gymId), {
+    payerId: input.payerId,
+    planId: input.planId,
+    memberIds: input.memberIds,
+    status: "active",
+    currentPeriodStart: Timestamp.fromDate(input.periodStart),
+    currentPeriodEnd: Timestamp.fromDate(input.periodEnd),
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
 /**
  * Fee collection snapshot for the dashboard: each payer's *latest*
  * subscription decides whether they're currently paid (period hasn't

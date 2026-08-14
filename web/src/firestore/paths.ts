@@ -30,3 +30,9 @@ export const equipmentCol = (gymId: string) => collection(db, "gyms", gymId, "eq
 export const equipmentRef = (gymId: string, equipmentId: string) => doc(db, "gyms", gymId, "equipment", equipmentId);
 
 export const expensesCol = (gymId: string) => collection(db, "gyms", gymId, "expenses");
+
+// Denormalized alongside each member's own `checkIns` subcollection so the
+// gym-wide attendance log can do one ordered query instead of a
+// collectionGroup query (which would need a composite index just to filter
+// by gymId and order by date).
+export const attendanceLogCol = (gymId: string) => collection(db, "gyms", gymId, "attendanceLog");
