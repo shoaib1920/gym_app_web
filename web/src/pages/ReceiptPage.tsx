@@ -11,8 +11,8 @@ function LineItem({ label, cents }: { label: string; cents: number | null }) {
   if (!cents) return null;
   return (
     <div className="flex justify-between border-b border-black/10 py-xs">
-      <span>{label}</span>
-      <span>{formatCurrency(cents)}</span>
+      <span className="font-medium">{label}</span>
+      <span className="font-medium">{formatCurrency(cents)}</span>
     </div>
   );
 }
@@ -51,6 +51,22 @@ export default function ReceiptPage() {
 
   const totalCents = (member.registrationFeeCents ?? 0) + (member.gymFeeCents ?? 0) + (member.lockerFeeCents ?? 0);
 
+  // Most browsers print a document-title header above the page content
+  // (from document.title, "Iron Ops | Gym Manager" everywhere else in this
+  // app) — swapping it to the gym's own name just for the print call is
+  // what actually keeps that off the printed receipt, since @media print
+  // CSS can't reach a browser-injected header/footer.
+  const handlePrint = () => {
+    const original = document.title;
+    document.title = gym?.name ?? "Receipt";
+    const restore = () => {
+      document.title = original;
+      window.removeEventListener("afterprint", restore);
+    };
+    window.addEventListener("afterprint", restore);
+    window.print();
+  };
+
   return (
     <div className="max-w-[32rem] mx-auto">
       <div className="print:hidden mb-lg flex items-center justify-between">
@@ -63,7 +79,7 @@ export default function ReceiptPage() {
             &larr; Back to profile
           </Link>
         )}
-        <Button onClick={() => window.print()}>
+        <Button onClick={handlePrint}>
           <Icon name="print" className="!text-lg" />
           Print receipt
         </Button>
@@ -72,33 +88,33 @@ export default function ReceiptPage() {
       <div className="rounded-xl border border-black/10 bg-white p-xl text-black print:border-0 print:rounded-none print:p-0">
         <div className="text-center mb-lg">
           <h1 className="text-2xl font-black uppercase tracking-tight">{gym?.name ?? "Gym"}</h1>
-          <p className="text-sm text-black/60 mt-xs">Registration Receipt</p>
+          <p className="text-sm text-black/80 font-semibold mt-xs">Registration Receipt</p>
         </div>
 
-        <div className="flex justify-between text-sm mb-lg">
+        <div className="flex justify-between text-sm font-semibold mb-lg">
           <span>Date: {new Date().toLocaleDateString()}</span>
           <span>Reg. #: {member.memberCode}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-md text-sm mb-lg">
           <div>
-            <p className="text-black/50 uppercase text-xs">Member name</p>
+            <p className="text-black font-bold uppercase text-xs">Member name</p>
             <p className="font-semibold">{member.fullName}</p>
           </div>
           <div>
-            <p className="text-black/50 uppercase text-xs">Phone</p>
+            <p className="text-black font-bold uppercase text-xs">Phone</p>
             <p className="font-semibold">{member.phone ?? "—"}</p>
           </div>
           <div>
-            <p className="text-black/50 uppercase text-xs">Gender</p>
+            <p className="text-black font-bold uppercase text-xs">Gender</p>
             <p className="font-semibold capitalize">{member.gender ?? "—"}</p>
           </div>
           <div>
-            <p className="text-black/50 uppercase text-xs">Date of joining</p>
+            <p className="text-black font-bold uppercase text-xs">Date of joining</p>
             <p className="font-semibold">{member.joiningDate ?? "—"}</p>
           </div>
           <div>
-            <p className="text-black/50 uppercase text-xs">Ending date</p>
+            <p className="text-black font-bold uppercase text-xs">Ending date</p>
             <p className="font-semibold">{member.endingDate ?? "—"}</p>
           </div>
         </div>
@@ -114,13 +130,17 @@ export default function ReceiptPage() {
           </div>
         </div>
 
-        <div className="mt-2xl flex justify-between text-xs text-black/60">
+        <div className="mt-2xl flex justify-between text-xs font-semibold text-black/80">
           <div>
             <p className="border-t border-black/40 pt-1 mt-8 w-32 text-center">Member signature</p>
           </div>
           <div>
             <p className="border-t border-black/40 pt-1 mt-8 w-32 text-center">Received by</p>
           </div>
+        </div>
+
+        <div className="mt-xl pt-md border-t border-black/10 text-center text-[10px] text-black/60">
+          Powered by Devtimize
         </div>
       </div>
     </div>

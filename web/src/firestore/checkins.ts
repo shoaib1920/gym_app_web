@@ -3,6 +3,8 @@ import { db } from "../firebase/firebaseConfig";
 import { memberRef, checkInsCol, membersCol, attendanceLogCol } from "./paths";
 import { findPayerIdForMember } from "./payers";
 import { getLatestSubscriptionForPayer } from "./subscriptions";
+import { getRenewalStatus, renewalLabel } from "../lib/renewals";
+import { formatCurrency } from "../lib/currency";
 import type { AttendanceSource, Member } from "./types";
 
 interface QrPayload {
@@ -26,24 +28,41 @@ export interface KioskCheckInResult {
   fee: KioskFeeStatus;
 }
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
 /**
- * Mirrors the original gym_attendence_system's computeFeeStatus (see its
- * services/feeService.js) so the kiosk still greets a member with their
- * paid/overdue standing, not just a bare "checked in" confirmation. Fee
- * status here isn't stored on the member directly — it's tracked on
- * whichever payer's subscription covers them — so this walks
- * member -> payer -> latest subscription.
+ * Mirrors the original gym_attendence_system's computeFeeStatus so the
+ * kiosk still greets a member with their paid/overdue standing, not just a
+ * bare "checked in" confirmation.
+ *
+ * Checks the member's own endingDate/gymFeeCents fields first — that's
+ * what the add-member form actually collects now — and only falls back to
+ * the older Payer/Subscription system for members registered before those
+ * fields existed. Previously this only ever checked Payer/Subscription,
+ * so a member added with a fee and ending date still showed "No payment
+ * on record" at the kiosk because nothing had created a Payer/Subscription
+ * for them.
  */
-async function getKioskFeeStatus(gymId: string, memberId: string): Promise<KioskFeeStatus> {
+async function getKioskFeeStatus(
+  gymId: string,
+  memberId: string,
+  endingDate: string | null,
+  gymFeeCents: number | null
+): Promise<KioskFeeStatus> {
+  const renewal = getRenewalStatus({ endingDate });
+  if (renewal) {
+    return {
+      state: renewal.isOverdue ? "overdue" : "paid",
+      label: renewalLabel(renewal),
+      planName: gymFeeCents ? formatCurrency(gymFeeCents) : undefined,
+    };
+  }
+
   const payerId = await findPayerIdForMember(gymId, memberId);
   const status = payerId ? await getLatestSubscriptionForPayer(gymId, payerId) : null;
   if (!status) {
     return { state: "no-plan", label: "No payment on record" };
   }
 
-  const daysDiff = Math.round((status.currentPeriodEnd.getTime() - Date.now()) / MS_PER_DAY);
+  const daysDiff = Math.round((status.currentPeriodEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
   if (daysDiff >= 0) {
     return {
       state: "paid",
@@ -128,7 +147,7 @@ export async function recordCheckInByCode(gymId: string, memberCode: string): Pr
 
   const [, fee] = await Promise.all([
     batchCheckIn(gymId, memberDoc.id, fullName, "kiosk"),
-    getKioskFeeStatus(gymId, memberDoc.id),
+    getKioskFeeStatus(gymId, memberDoc.id, data.endingDate ?? null, data.gymFeeCents ?? null),
   ]);
 
   return {
