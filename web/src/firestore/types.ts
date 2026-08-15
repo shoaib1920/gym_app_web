@@ -12,16 +12,23 @@ export interface Gym {
   createdAt: Date;
 }
 
+export type Gender = "male" | "female" | "other";
+
 export interface Member {
   id: string;
   memberCode: string;
   fullName: string;
-  dateOfBirth: string | null;
+  gender: Gender | null;
   email: string | null;
   phone: string | null;
   profilePhotoUrl: string | null;
   isMinor: boolean;
   status: "active" | "frozen" | "cancelled";
+  joiningDate: string | null;
+  endingDate: string | null;
+  gymFeeCents: number | null;
+  lockerFeeCents: number | null;
+  registrationFeeCents: number | null;
   createdAt: Date;
 }
 

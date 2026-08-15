@@ -21,12 +21,17 @@ function toMember(id: string, data: any): Member {
     id,
     memberCode: data.memberCode ?? "",
     fullName: data.fullName,
-    dateOfBirth: data.dateOfBirth ?? null,
+    gender: data.gender ?? null,
     email: data.email ?? null,
     phone: data.phone ?? null,
     profilePhotoUrl: data.profilePhotoUrl ?? null,
     isMinor: !!data.isMinor,
     status: data.status ?? "active",
+    joiningDate: data.joiningDate ?? null,
+    endingDate: data.endingDate ?? null,
+    gymFeeCents: data.gymFeeCents ?? null,
+    lockerFeeCents: data.lockerFeeCents ?? null,
+    registrationFeeCents: data.registrationFeeCents ?? null,
     createdAt: data.createdAt?.toDate?.() ?? new Date(),
   };
 }
@@ -78,12 +83,27 @@ async function nextMemberCode(gymId: string): Promise<string> {
   return String(seq).padStart(4, "0");
 }
 
+/** Used whenever an owner manually types a registration number (on add, or editing an existing member) instead of taking the auto-generated one. */
+async function assertMemberCodeAvailable(gymId: string, memberCode: string, excludeMemberId?: string): Promise<void> {
+  const snap = await getDocs(query(membersCol(gymId), where("memberCode", "==", memberCode)));
+  const takenByOther = snap.docs.some((d) => d.id !== excludeMemberId);
+  if (takenByOther) {
+    throw new Error(`Registration number "${memberCode}" is already in use by another member.`);
+  }
+}
+
 export interface CreateMemberInput {
   fullName: string;
-  dateOfBirth?: string;
+  memberCode?: string;
+  gender?: Member["gender"];
   email?: string;
   phone?: string;
   isMinor: boolean;
+  joiningDate?: string;
+  endingDate?: string;
+  gymFeeCents?: number;
+  lockerFeeCents?: number;
+  registrationFeeCents?: number;
   waiver: {
     templateVersion?: string;
     signedByName: string;
@@ -96,19 +116,28 @@ export interface CreateMemberInput {
  * guarantee the old backend's DB transaction gave: a member row never
  * exists without a signed waiver attached. */
 export async function createMemberWithWaiver(gymId: string, input: CreateMemberInput): Promise<string> {
-  const memberCode = await nextMemberCode(gymId);
+  const manualCode = input.memberCode?.trim();
+  if (manualCode) {
+    await assertMemberCodeAvailable(gymId, manualCode);
+  }
+  const memberCode = manualCode || (await nextMemberCode(gymId));
   const batch = writeBatch(db);
   const memberDocRef = doc(membersCol(gymId));
 
   batch.set(memberDocRef, {
     memberCode,
     fullName: input.fullName,
-    dateOfBirth: input.dateOfBirth ?? null,
+    gender: input.gender ?? null,
     email: input.email ?? null,
     phone: input.phone ?? null,
     profilePhotoUrl: null,
     isMinor: input.isMinor,
     status: "active",
+    joiningDate: input.joiningDate ?? null,
+    endingDate: input.endingDate ?? null,
+    gymFeeCents: input.gymFeeCents ?? null,
+    lockerFeeCents: input.lockerFeeCents ?? null,
+    registrationFeeCents: input.registrationFeeCents ?? null,
     createdAt: serverTimestamp(),
   });
 
@@ -132,12 +161,32 @@ export async function getMemberByCode(gymId: string, memberCode: string): Promis
   return toMember(snap.docs[0].id, snap.docs[0].data());
 }
 
-export async function updateMember(
-  gymId: string,
-  memberId: string,
-  patch: Partial<Pick<Member, "fullName" | "dateOfBirth" | "email" | "phone" | "status" | "profilePhotoUrl">>
-): Promise<void> {
-  await updateDoc(memberRef(gymId, memberId), patch as Record<string, unknown>);
+export type MemberEditableFields = Partial<
+  Pick<
+    Member,
+    | "fullName"
+    | "memberCode"
+    | "gender"
+    | "email"
+    | "phone"
+    | "status"
+    | "profilePhotoUrl"
+    | "isMinor"
+    | "joiningDate"
+    | "endingDate"
+    | "gymFeeCents"
+    | "lockerFeeCents"
+    | "registrationFeeCents"
+  >
+>;
+
+export async function updateMember(gymId: string, memberId: string, patch: MemberEditableFields): Promise<void> {
+  const finalPatch = { ...patch };
+  if (finalPatch.memberCode) {
+    finalPatch.memberCode = finalPatch.memberCode.trim();
+    await assertMemberCodeAvailable(gymId, finalPatch.memberCode, memberId);
+  }
+  await updateDoc(memberRef(gymId, memberId), finalPatch as Record<string, unknown>);
 }
 
 /**
@@ -152,9 +201,15 @@ export function getMemberQrPayload(gymId: string, memberId: string): string {
   return JSON.stringify({ gymId, memberId });
 }
 
+function formatDateOnly(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export interface ImportMemberInput {
   fullName: string;
-  dateOfBirth?: string;
   email?: string;
   phone?: string;
   joinedAt?: Date;
@@ -164,8 +219,9 @@ export interface ImportMemberInput {
  * Bulk-import counterpart to createMemberWithWaiver. Historical members
  * from a spreadsheet never signed a waiver in this app, so — unlike normal
  * signup — this doesn't create one; MemberDetail.waivers already renders
- * fine as an empty array. createdAt is backdated to the sheet's join date
- * when known, so "member since" reflects reality instead of import day.
+ * fine as an empty array. createdAt (and joiningDate) are backdated to the
+ * sheet's join date when known, so "member since" reflects reality instead
+ * of import day.
  */
 export async function importMember(gymId: string, input: ImportMemberInput): Promise<string> {
   const memberCode = await nextMemberCode(gymId);
@@ -174,12 +230,17 @@ export async function importMember(gymId: string, input: ImportMemberInput): Pro
     .set(memberDocRef, {
       memberCode,
       fullName: input.fullName,
-      dateOfBirth: input.dateOfBirth ?? null,
+      gender: null,
       email: input.email ?? null,
       phone: input.phone ?? null,
       profilePhotoUrl: null,
       isMinor: false,
       status: "active",
+      joiningDate: input.joinedAt ? formatDateOnly(input.joinedAt) : null,
+      endingDate: null,
+      gymFeeCents: null,
+      lockerFeeCents: null,
+      registrationFeeCents: null,
       createdAt: input.joinedAt ? Timestamp.fromDate(input.joinedAt) : serverTimestamp(),
     })
     .commit();

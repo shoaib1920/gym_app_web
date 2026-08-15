@@ -104,7 +104,6 @@ export async function importRows(
         fullName: row.fullName,
         email: row.email,
         phone: row.phone,
-        dateOfBirth: row.dateOfBirth,
         joinedAt: row.joinedAt,
       });
       summary.membersCreated++;

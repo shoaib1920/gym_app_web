@@ -35,7 +35,6 @@ export type ImportField =
   | "fullName"
   | "email"
   | "phone"
-  | "dateOfBirth"
   | "joinedAt"
   | "planName"
   | "planPrice"
@@ -49,7 +48,6 @@ export const IMPORT_FIELDS: { key: ImportField; label: string; required?: boolea
   { key: "fullName", label: "Full Name", required: true },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
-  { key: "dateOfBirth", label: "Date of Birth" },
   { key: "joinedAt", label: "Join Date" },
   { key: "planName", label: "Plan Name" },
   { key: "planPrice", label: "Plan Price" },
@@ -63,7 +61,6 @@ export function emptyMapping(): ColumnMapping {
     fullName: null,
     email: null,
     phone: null,
-    dateOfBirth: null,
     joinedAt: null,
     planName: null,
     planPrice: null,
@@ -77,7 +74,6 @@ const GUESS_PATTERNS: Record<ImportField, RegExp> = {
   fullName: /name/i,
   email: /e-?mail/i,
   phone: /phone|contact|mobile|cell/i,
-  dateOfBirth: /birth|dob/i,
   joinedAt: /join|start|enroll|registration date/i,
   planName: /plan|package|membership/i,
   planPrice: /price|fee|amount|cost/i,
@@ -101,7 +97,6 @@ export interface MappedRow {
   fullName: string;
   email?: string;
   phone?: string;
-  dateOfBirth?: string;
   joinedAt?: Date;
   planName?: string;
   planPriceCents?: number;
@@ -150,7 +145,6 @@ export function mapRow(headers: string[], row: string[], mapping: ColumnMapping,
     fullName,
     email: cellFor(headers, row, mapping.email) || undefined,
     phone: cellFor(headers, row, mapping.phone) || undefined,
-    dateOfBirth: cellFor(headers, row, mapping.dateOfBirth) || undefined,
     joinedAt: parseFlexibleDate(cellFor(headers, row, mapping.joinedAt)),
     planName: cellFor(headers, row, mapping.planName) || undefined,
     planPriceCents: parsePriceToCents(cellFor(headers, row, mapping.planPrice)),
