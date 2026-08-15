@@ -311,6 +311,15 @@ export default function MemberDetailPage() {
                 View QR
               </Button>
             </Link>
+            <Link to={`/members/${member.id}/receipt`} className="flex-1">
+              <Button fullWidth variant="secondary">
+                <Icon name="print" className="!text-lg" />
+                Print receipt
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mt-md">
             <Button fullWidth onClick={() => navigate(`/classes?bookFor=${member.id}`)}>
               <Icon name="event_available" className="!text-lg" />
               Book a class

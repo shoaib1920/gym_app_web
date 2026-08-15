@@ -122,3 +122,16 @@ body {
   height: 100% !important;
   object-fit: cover;
 }
+
+/* ReceiptPage is the only page meant to be printed — hide the app chrome
+   around it so what comes out of the printer is just the receipt. */
+@media print {
+  header,
+  nav {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

@@ -21,6 +21,7 @@ import FeeOverviewPage from "./pages/FeeOverviewPage";
 import AttendancePage from "./pages/AttendancePage";
 import ImportPage from "./pages/ImportPage";
 import KioskPage from "./pages/KioskPage";
+import ReceiptPage from "./pages/ReceiptPage";
 
 /**
  * The app-access gate. Which subtree renders is driven entirely by
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="/members/new" element={<MemberFormPage />} />
         <Route path="/members/:memberId" element={<MemberDetailPage />} />
         <Route path="/members/:memberId/qr" element={<MemberQRPage />} />
+        <Route path="/members/:memberId/receipt" element={<ReceiptPage />} />
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/payers" element={<PayersPage />} />
         <Route path="/payers/:payerId" element={<PayerDetailPage />} />

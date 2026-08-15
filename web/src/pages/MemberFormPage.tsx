@@ -54,6 +54,7 @@ export default function MemberFormPage() {
   const [memberCode, setMemberCode] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender | "">("");
   const [joiningDate, setJoiningDate] = useState("");
   const [endingDate, setEndingDate] = useState("");
@@ -102,11 +103,12 @@ export default function MemberFormPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await createMemberWithWaiver(gymId, {
+      const newMemberId = await createMemberWithWaiver(gymId, {
         fullName: fullName.trim(),
         memberCode: memberCode.trim() || undefined,
         gender: gender || undefined,
         phone: phone || undefined,
+        email: email || undefined,
         joiningDate: joiningDate || undefined,
         endingDate: endingDate || undefined,
         registrationFeeCents: toCentsOrUndefined(registrationFee),
@@ -120,7 +122,7 @@ export default function MemberFormPage() {
           signatureData,
         },
       });
-      navigate("/members");
+      navigate(`/members/${newMemberId}/receipt?fresh=1`);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -231,6 +233,13 @@ export default function MemberFormPage() {
         />
         <Input label="Full name" placeholder="e.g. John Doe" value={fullName} onChange={(e) => setFullName(e.target.value)} />
         <Input label="Phone number" type="tel" placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <Input
+          label="Email (optional, for fee reminders)"
+          type="email"
+          placeholder="member@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
         <label className="mb-md block">
           <span className="mb-xs block font-label-md text-label-md text-on-surface">Gender</span>
