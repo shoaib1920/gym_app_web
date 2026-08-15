@@ -5,6 +5,7 @@ import { listMembers } from "../firestore/members";
 import { getFeeOverview } from "../firestore/subscriptions";
 import { listEquipment } from "../firestore/equipment";
 import { listTodayAttendance } from "../firestore/attendance";
+import { listDueMembers } from "../lib/renewals";
 import type { FeeOverview } from "../firestore/types";
 import { Icon } from "../components/ui";
 import { formatCurrency } from "../lib/currency";
@@ -48,9 +49,13 @@ export default function DashboardPage() {
   const [fees, setFees] = useState<FeeOverview | null>(null);
   const [attentionCount, setAttentionCount] = useState<number | null>(null);
   const [checkedInToday, setCheckedInToday] = useState<number | null>(null);
+  const [renewalsDue, setRenewalsDue] = useState<number | null>(null);
 
   useEffect(() => {
-    listMembers(gymId).then((m) => setMemberCount(m.length));
+    listMembers(gymId).then((m) => {
+      setMemberCount(m.length);
+      setRenewalsDue(listDueMembers(m, 7).length);
+    });
     getFeeOverview(gymId).then(setFees);
     listEquipment(gymId).then((items) => setAttentionCount(items.filter((i) => i.condition !== "good").length));
     listTodayAttendance(gymId).then((entries) => setCheckedInToday(entries.length));
@@ -95,6 +100,14 @@ export default function DashboardPage() {
             label="Checked in today"
             value={checkedInToday === null ? "—" : String(checkedInToday)}
             hint="Front desk scans, kiosk, and self check-ins."
+          />
+
+          <StatCard
+            to="/renewals"
+            label="Renewals due"
+            value={renewalsDue === null ? "—" : String(renewalsDue)}
+            hint="Overdue or ending within 7 days."
+            accent={renewalsDue ? "error" : "primary-container"}
           />
 
           <StatCard

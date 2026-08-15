@@ -1,7 +1,14 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, initializeAuth, browserSessionPersistence, type Auth } from "firebase/auth";
+import { getAuth, initializeAuth, browserSessionPersistence, indexedDBLocalPersistence, type Auth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
-import { initializeFirestore, getFirestore, type Firestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from "firebase/firestore";
+import { Capacitor } from "@capacitor/core";
 
 // Fill these in from Firebase Console > Project Settings > General > Your apps.
 // Safe to keep in source (these are public client identifiers, not secrets) —
@@ -32,12 +39,21 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // reading the gym's own subscriptionStatus (itself gated by
 // firestore.rules) is what decides whether the user gets in.
 //
+// Capacitor.isNativePlatform() is true inside the Electron desktop shell
+// and the Android app, false in a plain browser tab (the Vercel-hosted
+// site) — so only the installed apps get indexedDBLocalPersistence
+// (survives a full app restart), which a desktop app left closed
+// overnight needs in order to still be usable before internet comes back.
+// The web tab keeps the original fresh-login-every-visit behavior.
+//
 // Guarded with try/catch because initializeAuth throws if called twice on
 // the same app instance (e.g. Vite HMR re-evaluating this module) — falls
 // back to getAuth, which is safe once auth is already registered.
 let auth: Auth;
 try {
-  auth = initializeAuth(app, { persistence: browserSessionPersistence });
+  auth = initializeAuth(app, {
+    persistence: Capacitor.isNativePlatform() ? indexedDBLocalPersistence : browserSessionPersistence,
+  });
 } catch {
   auth = getAuth(app);
 }
@@ -50,9 +66,21 @@ const storage = getStorage(app);
 // hypothetical. Auto-detecting long-polling falls back to plain HTTPS
 // requests when the streaming connection can't establish, same as it does
 // in this project's own sandboxed preview environment.
+//
+// persistentLocalCache turns on Firestore's own offline story: reads are
+// served from an IndexedDB cache when there's no network (whatever was
+// fetched before is available), and writes made offline are queued
+// automatically and flushed to Firebase the moment connectivity returns —
+// exactly the "works offline, syncs when back online" behavior the
+// desktop app needs, with no custom sync code. persistentMultipleTabManager
+// lets more than one tab/window share that cache instead of fighting over
+// a lock (harmless on a single-tab desktop app, needed for the web tab).
 let db: Firestore;
 try {
-  db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+  db = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  });
 } catch {
   db = getFirestore(app);
 }

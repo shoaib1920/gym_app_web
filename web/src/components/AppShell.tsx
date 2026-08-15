@@ -9,6 +9,7 @@ const MEMBERS_GROUP = [
   { label: "Front Desk Scanner", to: "/scanner", icon: "qr_code_scanner" },
   { label: "Self Check-in Kiosk", to: "/kiosk", icon: "touch_app" },
   { label: "Attendance Log", to: "/attendance", icon: "event_available" },
+  { label: "Renewals", to: "/renewals", icon: "notifications_active" },
 ];
 
 const MANAGEMENT_GROUP = [

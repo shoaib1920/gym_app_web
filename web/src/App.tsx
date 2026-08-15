@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { checkAndNotifyRenewals } from "./lib/renewalNotifications";
 import AppShell from "./components/AppShell";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -22,6 +24,7 @@ import AttendancePage from "./pages/AttendancePage";
 import ImportPage from "./pages/ImportPage";
 import KioskPage from "./pages/KioskPage";
 import ReceiptPage from "./pages/ReceiptPage";
+import RenewalsPage from "./pages/RenewalsPage";
 
 /**
  * The app-access gate. Which subtree renders is driven entirely by
@@ -35,6 +38,15 @@ import ReceiptPage from "./pages/ReceiptPage";
 export default function App() {
   const { state } = useAuth();
   const location = useLocation();
+  const gymId = state.phase === "accessGranted" ? state.gymId : null;
+
+  useEffect(() => {
+    if (gymId) {
+      checkAndNotifyRenewals(gymId).catch(() => {
+        // Best-effort — a failed notification check shouldn't block the app.
+      });
+    }
+  }, [gymId]);
 
   if (state.phase === "accessDenied") {
     return <InactiveAccountPage />;
@@ -76,6 +88,7 @@ export default function App() {
         <Route path="/expenses" element={<ExpensesPage />} />
         <Route path="/fees" element={<FeeOverviewPage />} />
         <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/renewals" element={<RenewalsPage />} />
         <Route path="/import" element={<ImportPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
