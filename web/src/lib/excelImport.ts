@@ -33,6 +33,7 @@ export async function parseSpreadsheet(file: File): Promise<ParsedSheet> {
 
 export type ImportField =
   | "fullName"
+  | "memberCode"
   | "email"
   | "phone"
   | "joinedAt"
@@ -46,6 +47,7 @@ export type ColumnMapping = Record<ImportField, string | null>;
 
 export const IMPORT_FIELDS: { key: ImportField; label: string; required?: boolean; hint?: string }[] = [
   { key: "fullName", label: "Full Name", required: true },
+  { key: "memberCode", label: "Registration Number", hint: "leave unmapped to auto-generate" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
   { key: "joinedAt", label: "Join Date" },
@@ -59,6 +61,7 @@ export const IMPORT_FIELDS: { key: ImportField; label: string; required?: boolea
 export function emptyMapping(): ColumnMapping {
   return {
     fullName: null,
+    memberCode: null,
     email: null,
     phone: null,
     joinedAt: null,
@@ -72,6 +75,7 @@ export function emptyMapping(): ColumnMapping {
 
 const GUESS_PATTERNS: Record<ImportField, RegExp> = {
   fullName: /name/i,
+  memberCode: /reg(istration)?\s*(no|number|#)|member\s*(code|id|no|number)/i,
   email: /e-?mail/i,
   phone: /phone|contact|mobile|cell/i,
   joinedAt: /join|start|enroll|registration date/i,
@@ -95,6 +99,7 @@ export function guessMapping(headers: string[]): ColumnMapping {
 export interface MappedRow {
   rowIndex: number;
   fullName: string;
+  memberCode?: string;
   email?: string;
   phone?: string;
   joinedAt?: Date;
@@ -143,6 +148,7 @@ export function mapRow(headers: string[], row: string[], mapping: ColumnMapping,
   return {
     rowIndex,
     fullName,
+    memberCode: cellFor(headers, row, mapping.memberCode) || undefined,
     email: cellFor(headers, row, mapping.email) || undefined,
     phone: cellFor(headers, row, mapping.phone) || undefined,
     joinedAt: parseFlexibleDate(cellFor(headers, row, mapping.joinedAt)),

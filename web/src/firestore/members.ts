@@ -104,54 +104,37 @@ export interface CreateMemberInput {
   gymFeeCents?: number;
   lockerFeeCents?: number;
   registrationFeeCents?: number;
-  waiver: {
-    templateVersion?: string;
-    signedByName: string;
-    signedByRelationship?: string;
-    signatureData: string;
-  };
 }
 
-/** Creates the member + its founding waiver in one atomic batch — the same
- * guarantee the old backend's DB transaction gave: a member row never
- * exists without a signed waiver attached. */
-export async function createMemberWithWaiver(gymId: string, input: CreateMemberInput): Promise<string> {
+/** Creates a member. No waiver/signature required — this gym doesn't use digital waivers. */
+export async function createMember(gymId: string, input: CreateMemberInput): Promise<{ id: string; memberCode: string }> {
   const manualCode = input.memberCode?.trim();
   if (manualCode) {
     await assertMemberCodeAvailable(gymId, manualCode);
   }
   const memberCode = manualCode || (await nextMemberCode(gymId));
-  const batch = writeBatch(db);
   const memberDocRef = doc(membersCol(gymId));
 
-  batch.set(memberDocRef, {
-    memberCode,
-    fullName: input.fullName,
-    gender: input.gender ?? null,
-    email: input.email ?? null,
-    phone: input.phone ?? null,
-    profilePhotoUrl: null,
-    isMinor: input.isMinor,
-    status: "active",
-    joiningDate: input.joiningDate ?? null,
-    endingDate: input.endingDate ?? null,
-    gymFeeCents: input.gymFeeCents ?? null,
-    lockerFeeCents: input.lockerFeeCents ?? null,
-    registrationFeeCents: input.registrationFeeCents ?? null,
-    createdAt: serverTimestamp(),
-  });
+  await writeBatch(db)
+    .set(memberDocRef, {
+      memberCode,
+      fullName: input.fullName,
+      gender: input.gender ?? null,
+      email: input.email ?? null,
+      phone: input.phone ?? null,
+      profilePhotoUrl: null,
+      isMinor: input.isMinor,
+      status: "active",
+      joiningDate: input.joiningDate ?? null,
+      endingDate: input.endingDate ?? null,
+      gymFeeCents: input.gymFeeCents ?? null,
+      lockerFeeCents: input.lockerFeeCents ?? null,
+      registrationFeeCents: input.registrationFeeCents ?? null,
+      createdAt: serverTimestamp(),
+    })
+    .commit();
 
-  const waiverDocRef = doc(waiversCol(gymId, memberDocRef.id));
-  batch.set(waiverDocRef, {
-    templateVersion: input.waiver.templateVersion ?? "v1",
-    signedByName: input.waiver.signedByName,
-    signedByRelationship: input.waiver.signedByRelationship ?? null,
-    signatureData: input.waiver.signatureData,
-    signedAt: serverTimestamp(),
-  });
-
-  await batch.commit();
-  return memberDocRef.id;
+  return { id: memberDocRef.id, memberCode };
 }
 
 /** Kiosk lookup: a member types their own code, this resolves it to a doc. */
@@ -210,21 +193,33 @@ function formatDateOnly(d: Date): string {
 
 export interface ImportMemberInput {
   fullName: string;
+  memberCode?: string;
   email?: string;
   phone?: string;
   joinedAt?: Date;
 }
 
 /**
- * Bulk-import counterpart to createMemberWithWaiver. Historical members
- * from a spreadsheet never signed a waiver in this app, so — unlike normal
- * signup — this doesn't create one; MemberDetail.waivers already renders
- * fine as an empty array. createdAt (and joiningDate) are backdated to the
- * sheet's join date when known, so "member since" reflects reality instead
- * of import day.
+ * Bulk-import counterpart to createMember. createdAt (and joiningDate) are
+ * backdated to the sheet's join date when known, so "member since" reflects
+ * reality instead of import day. If the sheet has its own registration
+ * number column, that's used as-is (skipping a duplicate silently rather
+ * than failing the whole import — spreadsheets exported from an old system
+ * sometimes have stale/reused numbers).
  */
 export async function importMember(gymId: string, input: ImportMemberInput): Promise<string> {
-  const memberCode = await nextMemberCode(gymId);
+  const manualCode = input.memberCode?.trim();
+  let memberCode: string;
+  if (manualCode) {
+    try {
+      await assertMemberCodeAvailable(gymId, manualCode);
+      memberCode = manualCode;
+    } catch {
+      memberCode = await nextMemberCode(gymId);
+    }
+  } else {
+    memberCode = await nextMemberCode(gymId);
+  }
   const memberDocRef = doc(membersCol(gymId));
   await writeBatch(db)
     .set(memberDocRef, {

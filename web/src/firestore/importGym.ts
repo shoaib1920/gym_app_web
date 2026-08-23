@@ -102,6 +102,7 @@ export async function importRows(
     try {
       const memberId = await importMember(gymId, {
         fullName: row.fullName,
+        memberCode: row.memberCode,
         email: row.email,
         phone: row.phone,
         joinedAt: row.joinedAt,

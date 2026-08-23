@@ -1,11 +1,20 @@
 import type { CapacitorElectronConfig } from '@capacitor-community/electron';
 import { getCapacitorElectronConfig, setupElectronDeepLinking } from '@capacitor-community/electron';
 import type { MenuItemConstructorOptions } from 'electron';
-import { app, MenuItem } from 'electron';
+import { app, MenuItem, ipcMain } from 'electron';
 import electronIsDev from 'electron-is-dev';
 import unhandled from 'electron-unhandled';
+import * as dotenv from 'dotenv';
+import * as nodemailer from 'nodemailer';
+import { join } from 'path';
 
 import { ElectronCapacitorApp, setupContentSecurityPolicy, setupReloadWatcher } from './setup';
+
+// Bundled at build time (see electron-builder.config.json's "files" list) —
+// this is the gym's own Gmail account, running only on their own machine,
+// the same trust model as any desktop email client storing your own
+// credentials locally. Never bundle a *shared*/multi-tenant secret this way.
+dotenv.config({ path: join(app.getAppPath(), '.env') });
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -68,3 +77,42 @@ app.on('activate', async function () {
 });
 
 // Place all ipc or other electron api calls and custom functionality under this line
+
+interface RegistrationEmailPayload {
+  to: string;
+  gymName: string;
+  memberName: string;
+  memberCode: string;
+}
+
+let mailTransport: nodemailer.Transporter | null | undefined; // undefined = not yet resolved, null = unavailable
+
+function getMailTransport(): nodemailer.Transporter | null {
+  if (mailTransport !== undefined) return mailTransport;
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  mailTransport = user && pass ? nodemailer.createTransport({ service: 'gmail', auth: { user, pass } }) : null;
+  return mailTransport;
+}
+
+// Sends a welcome email from the gym's own Gmail account when a new member
+// is registered with an email on file. Renderer-triggered (see
+// web/src/lib/electronBridge.ts) right after MemberFormPage saves a member.
+// This can only live here — the browser/web build has no safe place to hold
+// an SMTP credential — which is also why it's a no-op outside Electron.
+ipcMain.handle('send-registration-email', async (_event, payload: RegistrationEmailPayload) => {
+  const transport = getMailTransport();
+  if (!transport) return { ok: false, error: 'Email not configured on this device' };
+  try {
+    await transport.sendMail({
+      from: process.env.GMAIL_USER,
+      to: payload.to,
+      subject: `Welcome to ${payload.gymName}!`,
+      text: `Hi ${payload.memberName},\n\nWelcome to ${payload.gymName}! Your registration is complete.\n\nYour registration number is ${payload.memberCode}. Use this for the attendance system.\n\nSee you at the gym!`,
+      html: `<p>Hi ${payload.memberName},</p><p>Welcome to <b>${payload.gymName}</b>! Your registration is complete.</p><p>Your registration number is <b>${payload.memberCode}</b>. Use this for the attendance system.</p><p>See you at the gym!</p>`,
+    });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+});

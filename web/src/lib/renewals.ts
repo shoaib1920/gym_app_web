@@ -49,5 +49,5 @@ export function listDueMembers(members: Member[], withinDays = 7): DueMember[] {
 export function renewalLabel(status: RenewalStatus): string {
   if (status.isOverdue) return `Overdue by ${-status.daysLeft} day${-status.daysLeft === 1 ? "" : "s"}`;
   if (status.daysLeft === 0) return "Due today";
-  return `Due in ${status.daysLeft} day${status.daysLeft === 1 ? "" : "s"}`;
+  return `${status.daysLeft} day${status.daysLeft === 1 ? "" : "s"} left`;
 }
