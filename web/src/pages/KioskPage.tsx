@@ -72,7 +72,11 @@ export default function KioskPage() {
 
       {/* Left: always the same height, never changes */}
       <div className="w-full max-w-[22rem] text-center shrink-0">
-        <Icon name="fitness_center" filled className="!text-4xl text-primary-container" />
+        <img
+          src={`${import.meta.env.BASE_URL}gym-logo.jpg`}
+          alt=""
+          className="mx-auto h-16 w-16 rounded-full object-cover border-2 border-primary-container"
+        />
         <h1 className="mt-sm font-headline text-headline-lg font-black text-on-surface">{gymName}</h1>
         <p className="mt-xs font-body-md text-body-md text-on-surface-variant">Enter your member code</p>
 
