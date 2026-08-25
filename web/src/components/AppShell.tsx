@@ -1,8 +1,36 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Capacitor } from "@capacitor/core";
+import { useAuth, useGymId } from "../context/AuthContext";
+import { getGym } from "../firestore/gym";
 import { Icon } from "./ui";
+
+/**
+ * "IRON OPS" is the generic multi-tenant trial product's branding — every
+ * gym signed up on the hosted web app sees that name, so it stays
+ * hardcoded there. The installed desktop/Android shells are a different
+ * story: each one is built for one specific gym (see the electron/ build),
+ * so on native platforms this shows that gym's own name instead, pulled
+ * live from Firestore rather than hardcoded — the same build works
+ * correctly for whichever gym is signed in, not just one client.
+ */
+function useBrandName(): string {
+  const gymId = useGymId();
+  const [name, setName] = useState("IRON OPS");
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    getGym(gymId).then((gym) => {
+      if (gym?.name) {
+        setName(gym.name);
+        document.title = gym.name;
+      }
+    });
+  }, [gymId]);
+
+  return name;
+}
 
 const MEMBERS_GROUP = [
   { label: "Members", to: "/members", icon: "group" },
@@ -49,6 +77,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const { state, logout } = useAuth();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
+  const brandName = useBrandName();
   const trialDays = state.phase === "accessGranted" ? state.trialDaysRemaining : undefined;
   const status = state.phase === "accessGranted" ? state.status : undefined;
   const urgent = trialDays !== undefined && trialDays <= 3;
@@ -64,7 +93,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-16 bg-surface border-b border-outline-variant">
         <div className="flex items-center gap-sm">
           <Icon name="fitness_center" filled className="text-primary-container" />
-          <h1 className="font-headline text-headline-sm font-black text-primary-container tracking-tighter">IRON OPS</h1>
+          <h1 className="font-headline text-headline-sm font-black text-primary-container tracking-tighter">{brandName}</h1>
         </div>
         <button
           onClick={handleLogout}
@@ -94,7 +123,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <Icon name="store" className="text-primary-fixed-dim" />
             </div>
             <div>
-              <h2 className="font-label-md text-label-md text-on-surface">Your Gym</h2>
+              <h2 className="font-label-md text-label-md text-on-surface">{brandName === "IRON OPS" ? "Your Gym" : brandName}</h2>
               <p className="text-xs text-on-surface-variant flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" /> Active
               </p>

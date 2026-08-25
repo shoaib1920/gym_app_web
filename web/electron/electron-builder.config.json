@@ -1,6 +1,6 @@
 {
-  "appId": "com.gymmanager.app",
-  "productName": "Gym Manager",
+  "appId": "com.samimsfitness.app",
+  "productName": "Samim's Fitness",
   "directories": {
     "buildResources": "resources"
   },

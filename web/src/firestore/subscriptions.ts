@@ -2,6 +2,7 @@ import { addDoc, getDocs, orderBy, query, serverTimestamp, Timestamp, where } fr
 import { subscriptionsCol } from "./paths";
 import { listPlans } from "./plans";
 import { listPayers } from "./payers";
+import { getDocsPreferCache } from "./cache";
 import type { FeeOverview, FeeOverviewPayer } from "./types";
 
 export interface PayerFeeStatus {
@@ -22,7 +23,7 @@ export interface PayerFeeStatus {
  * simpler than maintaining an index config for it.
  */
 export async function getLatestSubscriptionForPayer(gymId: string, payerId: string): Promise<PayerFeeStatus | null> {
-  const snap = await getDocs(query(subscriptionsCol(gymId), where("payerId", "==", payerId)));
+  const snap = await getDocsPreferCache(query(subscriptionsCol(gymId), where("payerId", "==", payerId)));
   if (snap.empty) return null;
   const latest = snap.docs
     .map((d) => d.data())

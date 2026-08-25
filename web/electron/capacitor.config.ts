@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.gymmanager.app',
-  appName: 'Gym Manager',
+  appId: 'com.samimsfitness.app',
+  appName: "Samim's Fitness",
   webDir: 'dist'
 };
 

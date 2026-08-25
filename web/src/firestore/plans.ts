@@ -1,5 +1,6 @@
-import { addDoc, getDocs, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { addDoc, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { plansCol } from "./paths";
+import { getDocsPreferCache } from "./cache";
 import type { MembershipPlan } from "./types";
 
 export interface CreatePlanInput {
@@ -10,7 +11,7 @@ export interface CreatePlanInput {
 }
 
 export async function listPlans(gymId: string): Promise<MembershipPlan[]> {
-  const snap = await getDocs(query(plansCol(gymId), orderBy("createdAt", "desc")));
+  const snap = await getDocsPreferCache(query(plansCol(gymId), orderBy("createdAt", "desc")));
   return snap.docs.map((d) => ({
     id: d.id,
     name: d.data().name,

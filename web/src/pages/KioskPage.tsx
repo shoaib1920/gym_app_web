@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGymId } from "../context/AuthContext";
 import { recordCheckInByCode, type KioskCheckInResult } from "../firestore/checkins";
+import { getGym } from "../firestore/gym";
 import { Icon } from "../components/ui";
 
 const FEE_BANNER: Record<KioskCheckInResult["fee"]["state"], { icon: string; className: string }> = {
@@ -35,11 +36,13 @@ export default function KioskPage() {
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+  const [gymName, setGymName] = useState("Check In");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+    getGym(gymId).then((gym) => gym?.name && setGymName(gym.name));
+  }, [gymId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +73,7 @@ export default function KioskPage() {
       {/* Left: always the same height, never changes */}
       <div className="w-full max-w-[22rem] text-center shrink-0">
         <Icon name="fitness_center" filled className="!text-4xl text-primary-container" />
-        <h1 className="mt-sm font-headline text-headline-lg font-black text-on-surface">Check In</h1>
+        <h1 className="mt-sm font-headline text-headline-lg font-black text-on-surface">{gymName}</h1>
         <p className="mt-xs font-body-md text-body-md text-on-surface-variant">Enter your member code</p>
 
         <form onSubmit={handleSubmit} className="mt-lg">
@@ -109,7 +112,10 @@ export default function KioskPage() {
             <div className="text-center">
               <Icon name="account_circle" className="!text-3xl text-primary-container" />
               <h2 className="mt-1 font-headline text-headline-lg font-bold text-on-surface">{result.data.fullName}</h2>
-              <p className="font-label-sm text-label-sm text-on-surface-variant">Member #{result.data.memberCode}</p>
+              <p className="font-label-md text-label-md text-on-surface-variant">
+                #{result.data.memberCode}
+                {result.data.phone && <> &middot; {result.data.phone}</>}
+              </p>
             </div>
 
             <div className={`mt-sm rounded-xl px-md py-md text-center ${FEE_BANNER[result.data.fee.state].className}`}>
@@ -156,7 +162,10 @@ export default function KioskPage() {
                 <div className="text-center">
                   <Icon name="account_circle" className="!text-3xl text-primary-container" />
                   <h2 className="mt-1 font-headline text-headline-lg font-bold text-on-surface">{result.data.fullName}</h2>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant">Member #{result.data.memberCode}</p>
+                  <p className="font-label-md text-label-md text-on-surface-variant">
+                #{result.data.memberCode}
+                {result.data.phone && <> &middot; {result.data.phone}</>}
+              </p>
                 </div>
                 <div className={`mt-sm rounded-xl px-md py-md text-center ${FEE_BANNER[result.data.fee.state].className}`}>
                   <Icon name={FEE_BANNER[result.data.fee.state].icon} filled className="!text-2xl" />

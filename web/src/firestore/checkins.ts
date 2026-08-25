@@ -1,6 +1,7 @@
-import { getDoc, getDocs, query, where, writeBatch, doc, serverTimestamp } from "firebase/firestore";
+import { getDoc, query, where, writeBatch, doc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { memberRef, checkInsCol, membersCol, attendanceLogCol } from "./paths";
+import { getDocsPreferCache } from "./cache";
 import { findPayerIdForMember } from "./payers";
 import { getLatestSubscriptionForPayer } from "./subscriptions";
 import { getRenewalStatus, renewalLabel } from "../lib/renewals";
@@ -23,6 +24,7 @@ export interface KioskCheckInResult {
   memberId: string;
   fullName: string;
   memberCode: string;
+  phone: string | null;
   status: Member["status"];
   memberSince: Date;
   fee: KioskFeeStatus;
@@ -136,7 +138,7 @@ export async function recordCheckInByCode(gymId: string, memberCode: string): Pr
     throw new Error("Enter your member code");
   }
 
-  const snap = await getDocs(query(membersCol(gymId), where("memberCode", "==", trimmed)));
+  const snap = await getDocsPreferCache(query(membersCol(gymId), where("memberCode", "==", trimmed)));
   if (snap.empty) {
     throw new Error("No member found with that code");
   }
@@ -154,6 +156,7 @@ export async function recordCheckInByCode(gymId: string, memberCode: string): Pr
     memberId: memberDoc.id,
     fullName,
     memberCode: data.memberCode ?? trimmed,
+    phone: data.phone ?? null,
     status: data.status ?? "active",
     memberSince: data.createdAt?.toDate?.() ?? new Date(),
     fee,
