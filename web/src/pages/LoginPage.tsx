@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import { useAuth } from "../context/AuthContext";
 import { mapFirebaseError } from "../lib/firebaseErrors";
 import { Button, Input, ErrorText, Icon } from "../components/ui";
+
+// No gym is known yet at the login screen (nobody's authenticated), so this
+// can't fetch a name from Firestore the way AppShell/KioskPage do post-login
+// — same reasoning as the installer/productName branding in
+// electron-builder.config.json: this desktop build is dedicated to one gym,
+// so it's fine to hardcode its logo/name here, gated to native platforms
+// only so the shared multi-tenant web app keeps its generic branding.
+const isPersonalizedBuild = Capacitor.isNativePlatform();
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -71,8 +80,23 @@ export default function LoginPage() {
     <div className="flex min-h-svh items-center justify-center bg-background px-4">
       <form onSubmit={handleLogin} className="w-full max-w-[24rem]">
         <div className="mb-xl flex flex-col items-center">
-          <Icon name="fitness_center" filled className="!text-4xl text-primary-container mb-xs" />
-          <h1 className="font-headline text-headline-lg font-black text-primary-container tracking-tighter">IRON OPS</h1>
+          {isPersonalizedBuild ? (
+            <>
+              <img
+                src={`${import.meta.env.BASE_URL}gym-logo.jpg`}
+                alt=""
+                className="h-20 w-20 rounded-full object-cover border-2 border-primary-container mb-xs"
+              />
+              <h1 className="font-headline text-headline-lg font-black text-primary-container tracking-tighter">
+                Samim's Fitness
+              </h1>
+            </>
+          ) : (
+            <>
+              <Icon name="fitness_center" filled className="!text-4xl text-primary-container mb-xs" />
+              <h1 className="font-headline text-headline-lg font-black text-primary-container tracking-tighter">IRON OPS</h1>
+            </>
+          )}
           <p className="mt-1 font-label-md text-label-md text-on-surface-variant">Sign in to continue</p>
         </div>
 
