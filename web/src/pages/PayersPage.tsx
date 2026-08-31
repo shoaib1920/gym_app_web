@@ -7,6 +7,10 @@ import { Button, EmptyState, ErrorText, Icon, Input, ListRow, Modal, PageHeader,
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function isBlankOrValidEmail(email: string): boolean {
+  return !email.trim() || EMAIL_REGEX.test(email);
+}
+
 export default function PayersPage() {
   const gymId = useGymId();
   const navigate = useNavigate();
@@ -30,14 +34,18 @@ export default function PayersPage() {
   useEffect(load, [gymId]);
 
   const handleCreate = async () => {
-    if (!fullName.trim() || !EMAIL_REGEX.test(email)) {
-      setError("Enter a name and a valid email.");
+    if (!fullName.trim()) {
+      setError("Enter a name.");
+      return;
+    }
+    if (!isBlankOrValidEmail(email)) {
+      setError("Enter a valid email, or leave it blank.");
       return;
     }
     setSaving(true);
     setError(null);
     try {
-      const payerId = await createPayer(gymId, { fullName: fullName.trim(), email, phone: phone || undefined });
+      const payerId = await createPayer(gymId, { fullName: fullName.trim(), email: email.trim() || undefined, phone: phone || undefined });
       setModalOpen(false);
       setFullName("");
       setEmail("");
@@ -70,7 +78,7 @@ export default function PayersPage() {
           <Link key={p.id} to={`/payers/${p.id}`}>
             <ListRow>
               <p className="font-headline text-headline-sm font-semibold text-on-surface">{p.fullName}</p>
-              <p className="mt-0.5 font-label-md text-label-md text-on-surface-variant">{p.email}</p>
+              <p className="mt-0.5 font-label-md text-label-md text-on-surface-variant">{p.email ?? p.phone ?? "—"}</p>
             </ListRow>
           </Link>
         ))}
@@ -78,7 +86,7 @@ export default function PayersPage() {
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="New Payer">
         <Input label="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-        <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input label="Email (optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input label="Phone (optional)" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
         <ErrorText>{error}</ErrorText>

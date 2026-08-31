@@ -71,16 +71,16 @@ export default function KioskPage() {
       </button>
 
       {/* Left: always the same height, never changes */}
-      <div className="w-full max-w-[22rem] text-center shrink-0">
+      <div className="w-full max-w-[30rem] text-center shrink-0">
         <img
           src={`${import.meta.env.BASE_URL}gym-logo.jpg`}
           alt=""
-          className="mx-auto h-28 w-28 rounded-full object-cover border-2 border-primary-container"
+          className="mx-auto h-44 w-44 rounded-full object-cover border-4 border-primary-container"
         />
-        <h1 className="mt-sm font-headline text-headline-lg font-black text-on-surface">{gymName}</h1>
-        <p className="mt-xs font-body-md text-body-md text-on-surface-variant">Enter your member code</p>
+        <h1 className="mt-md font-headline text-6xl font-black text-on-surface leading-tight">{gymName}</h1>
+        <p className="mt-sm font-body-md text-xl text-on-surface-variant">Enter your member code</p>
 
-        <form onSubmit={handleSubmit} className="mt-lg">
+        <form onSubmit={handleSubmit} className="mt-xl">
           <input
             ref={inputRef}
             value={code}
@@ -88,12 +88,12 @@ export default function KioskPage() {
             inputMode="numeric"
             autoFocus
             placeholder="0000"
-            className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-md py-lg text-center font-headline text-headline-lg tracking-[0.3em] text-on-surface outline-none focus:border-primary-container"
+            className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-md py-xl text-center font-headline text-6xl tracking-[0.3em] text-on-surface outline-none focus:border-primary-container"
           />
           <button
             type="submit"
             disabled={!code.trim() || submitting}
-            className="mt-md w-full rounded-xl bg-primary-container px-lg py-md font-label-md text-label-md font-bold uppercase tracking-wide text-on-primary transition-all active:scale-95 disabled:opacity-30"
+            className="mt-lg w-full rounded-xl bg-primary-container px-lg py-lg text-xl font-label-md font-bold uppercase tracking-wide text-on-primary transition-all active:scale-95 disabled:opacity-30"
           >
             {submitting ? "Checking in…" : "Check In"}
           </button>
@@ -103,7 +103,7 @@ export default function KioskPage() {
       <div className="hidden md:block h-[70vh] w-px bg-outline-variant" />
 
       {/* Right: result panel, same footprint whether idle or showing a result */}
-      <div className="hidden md:flex w-full max-w-[22rem] flex-col justify-center">
+      <div className="hidden md:flex w-full max-w-[30rem] flex-col justify-center">
         {!result && (
           <div className="text-center text-on-surface-variant">
             <Icon name="account_circle" className="!text-4xl opacity-40" />
@@ -115,7 +115,7 @@ export default function KioskPage() {
           <div className="text-left">
             <div className="text-center">
               <Icon name="account_circle" className="!text-3xl text-primary-container" />
-              <h2 className="mt-1 font-headline text-headline-lg font-bold text-on-surface">{result.data.fullName}</h2>
+              <h2 className="mt-1 font-headline text-5xl font-bold text-on-surface leading-tight">{result.data.fullName}</h2>
               <p className="font-label-md text-label-md text-on-surface-variant">
                 #{result.data.memberCode}
                 {result.data.phone && <> &middot; {result.data.phone}</>}
@@ -165,7 +165,7 @@ export default function KioskPage() {
               <div className="text-left">
                 <div className="text-center">
                   <Icon name="account_circle" className="!text-3xl text-primary-container" />
-                  <h2 className="mt-1 font-headline text-headline-lg font-bold text-on-surface">{result.data.fullName}</h2>
+                  <h2 className="mt-1 font-headline text-5xl font-bold text-on-surface leading-tight">{result.data.fullName}</h2>
                   <p className="font-label-md text-label-md text-on-surface-variant">
                 #{result.data.memberCode}
                 {result.data.phone && <> &middot; {result.data.phone}</>}

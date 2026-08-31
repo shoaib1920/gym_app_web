@@ -54,7 +54,7 @@ export interface MemberDetail extends Member {
 export interface Payer {
   id: string;
   fullName: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   createdAt: Date;
 }

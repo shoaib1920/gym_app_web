@@ -5,7 +5,7 @@ import type { Payer, PayerDetail } from "./types";
 
 export interface CreatePayerInput {
   fullName: string;
-  email: string;
+  email?: string;
   phone?: string;
 }
 
@@ -14,7 +14,7 @@ export async function listPayers(gymId: string): Promise<Payer[]> {
   return snap.docs.map((d) => ({
     id: d.id,
     fullName: d.data().fullName,
-    email: d.data().email,
+    email: d.data().email ?? null,
     phone: d.data().phone ?? null,
     createdAt: d.data().createdAt?.toDate?.() ?? new Date(),
   }));
@@ -23,7 +23,7 @@ export async function listPayers(gymId: string): Promise<Payer[]> {
 export async function createPayer(gymId: string, input: CreatePayerInput): Promise<string> {
   const docRef = await addDoc(payersCol(gymId), {
     fullName: input.fullName,
-    email: input.email,
+    email: input.email ?? null,
     phone: input.phone ?? null,
     createdAt: serverTimestamp(),
   });
@@ -50,7 +50,7 @@ export async function getPayer(gymId: string, payerId: string): Promise<PayerDet
   return {
     id: payerSnap.id,
     fullName: payerSnap.data().fullName,
-    email: payerSnap.data().email,
+    email: payerSnap.data().email ?? null,
     phone: payerSnap.data().phone ?? null,
     createdAt: payerSnap.data().createdAt?.toDate?.() ?? new Date(),
     memberLinks,

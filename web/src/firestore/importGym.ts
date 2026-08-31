@@ -113,7 +113,7 @@ export async function importRows(
         const interval = row.billingInterval || "month";
         const planId = await resolvePlanId(row.planName, row.planPriceCents, interval);
 
-        const payerId = await createPayer(gymId, { fullName: row.fullName, email: row.email ?? "", phone: row.phone });
+        const payerId = await createPayer(gymId, { fullName: row.fullName, email: row.email, phone: row.phone });
         summary.payersCreated++;
         await linkMemberToPayer(gymId, payerId, memberId);
 
