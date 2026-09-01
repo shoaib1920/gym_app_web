@@ -70,17 +70,27 @@ export default function KioskPage() {
         <Icon name="settings" />
       </button>
 
-      {/* Left: always the same height, never changes */}
+      {/* Left: sized off viewport height (clamped) so it scales up on a big
+          kiosk screen but can never push the button below a short window —
+          that's what was happening with fixed px sizes before. */}
       <div className="w-full max-w-[30rem] text-center shrink-0">
         <img
           src={`${import.meta.env.BASE_URL}gym-logo.jpg`}
           alt=""
-          className="mx-auto h-44 w-44 rounded-full object-cover border-4 border-primary-container"
+          className="mx-auto rounded-full object-cover border-4 border-primary-container"
+          style={{ height: "clamp(6rem, 43vh, 15rem)", width: "clamp(6rem, 43vh, 15rem)" }}
         />
-        <h1 className="mt-md font-headline text-6xl font-black text-on-surface leading-tight">{gymName}</h1>
-        <p className="mt-sm font-body-md text-xl text-on-surface-variant">Enter your member code</p>
+        <h1
+          className="mt-md font-headline font-black text-on-surface leading-tight"
+          style={{ fontSize: "clamp(1.75rem, 6vh, 3.75rem)" }}
+        >
+          {gymName}
+        </h1>
+        <p className="mt-xs font-body-md text-on-surface-variant" style={{ fontSize: "clamp(0.9rem, 2.2vh, 1.25rem)" }}>
+          Enter your member code
+        </p>
 
-        <form onSubmit={handleSubmit} className="mt-xl">
+        <form onSubmit={handleSubmit} className="mt-md">
           <input
             ref={inputRef}
             value={code}
@@ -88,12 +98,14 @@ export default function KioskPage() {
             inputMode="numeric"
             autoFocus
             placeholder="0000"
-            className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-md py-xl text-center font-headline text-6xl tracking-[0.3em] text-on-surface outline-none focus:border-primary-container"
+            className="w-full rounded-xl border border-outline-variant bg-surface-container-low text-center font-headline tracking-[0.3em] text-on-surface outline-none focus:border-primary-container"
+            style={{ fontSize: "clamp(1.75rem, 6vh, 3.75rem)", padding: "clamp(0.6rem, 2.5vh, 1.5rem) 1rem" }}
           />
           <button
             type="submit"
             disabled={!code.trim() || submitting}
-            className="mt-lg w-full rounded-xl bg-primary-container px-lg py-lg text-xl font-label-md font-bold uppercase tracking-wide text-on-primary transition-all active:scale-95 disabled:opacity-30"
+            className="mt-sm w-full rounded-xl bg-primary-container font-label-md font-bold uppercase tracking-wide text-on-primary transition-all active:scale-95 disabled:opacity-30"
+            style={{ fontSize: "clamp(0.9rem, 2vh, 1.15rem)", padding: "clamp(0.5rem, 1.8vh, 1rem) 1.25rem" }}
           >
             {submitting ? "Checking in…" : "Check In"}
           </button>
