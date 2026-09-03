@@ -128,28 +128,26 @@ export default function KioskPage() {
             <div className="text-center">
               <Icon name="account_circle" className="!text-3xl text-primary-container" />
               <h2 className="mt-1 font-headline text-5xl font-bold text-on-surface leading-tight">{result.data.fullName}</h2>
-              <p className="font-label-md text-label-md text-on-surface-variant">
+              <p className="text-2xl text-on-surface-variant">
                 #{result.data.memberCode}
                 {result.data.phone && <> &middot; {result.data.phone}</>}
               </p>
             </div>
 
             <div className={`mt-sm rounded-xl px-md py-md text-center ${FEE_BANNER[result.data.fee.state].className}`}>
-              <Icon name={FEE_BANNER[result.data.fee.state].icon} filled className="!text-2xl" />
-              <p className="mt-0.5 font-headline text-label-lg font-bold">{result.data.fee.label}</p>
-              {result.data.fee.planName && (
-                <p className="mt-0.5 font-label-sm text-label-sm opacity-80">{result.data.fee.planName}</p>
-              )}
+              <Icon name={FEE_BANNER[result.data.fee.state].icon} filled className="!text-3xl" />
+              <p className="mt-0.5 font-headline text-4xl font-bold">{result.data.fee.label}</p>
+              {result.data.fee.planName && <p className="mt-0.5 text-lg opacity-80">{result.data.fee.planName}</p>}
             </div>
 
             <div className="mt-sm rounded-xl border border-outline-variant bg-surface-container-low px-md py-xs">
               <div className="flex justify-between py-xs">
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Status</span>
-                <span className="font-label-sm text-label-sm text-on-surface capitalize">{result.data.status}</span>
+                <span className="text-lg text-on-surface-variant">Status</span>
+                <span className="text-lg text-on-surface capitalize">{result.data.status}</span>
               </div>
               <div className="flex justify-between py-xs">
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Member since</span>
-                <span className="font-label-sm text-label-sm text-on-surface">{result.data.memberSince.toLocaleDateString()}</span>
+                <span className="text-lg text-on-surface-variant">Member since</span>
+                <span className="text-lg text-on-surface">{result.data.memberSince.toLocaleDateString()}</span>
               </div>
             </div>
 
@@ -178,14 +176,14 @@ export default function KioskPage() {
                 <div className="text-center">
                   <Icon name="account_circle" className="!text-3xl text-primary-container" />
                   <h2 className="mt-1 font-headline text-5xl font-bold text-on-surface leading-tight">{result.data.fullName}</h2>
-                  <p className="font-label-md text-label-md text-on-surface-variant">
+                  <p className="text-2xl text-on-surface-variant">
                 #{result.data.memberCode}
                 {result.data.phone && <> &middot; {result.data.phone}</>}
               </p>
                 </div>
                 <div className={`mt-sm rounded-xl px-md py-md text-center ${FEE_BANNER[result.data.fee.state].className}`}>
-                  <Icon name={FEE_BANNER[result.data.fee.state].icon} filled className="!text-2xl" />
-                  <p className="mt-0.5 font-headline text-label-lg font-bold">{result.data.fee.label}</p>
+                  <Icon name={FEE_BANNER[result.data.fee.state].icon} filled className="!text-3xl" />
+                  <p className="mt-0.5 font-headline text-4xl font-bold">{result.data.fee.label}</p>
                 </div>
               </div>
             ) : (

@@ -106,7 +106,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
       {status === "trialing" && trialDays !== undefined && (
         <div
-          className={`fixed top-16 left-0 lg:left-72 right-0 z-40 flex items-center justify-center gap-xs px-md py-sm font-label-md text-label-md ${
+          className={`print:hidden fixed top-16 left-0 lg:left-72 right-0 z-40 flex items-center justify-center gap-xs px-md py-sm font-label-md text-label-md ${
             urgent ? "bg-error-container text-on-error-container" : "bg-surface-container-high text-on-surface-variant"
           }`}
         >
