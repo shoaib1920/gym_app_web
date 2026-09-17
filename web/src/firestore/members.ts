@@ -13,6 +13,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import { getDocsPreferCache } from "./cache";
 import { membersCol, memberRef, waiversCol, checkInsCol, gymRef } from "./paths";
 import type { Member, MemberDetail, Waiver, CheckIn } from "./types";
 
@@ -37,7 +38,7 @@ function toMember(id: string, data: any): Member {
 }
 
 export async function listMembers(gymId: string): Promise<Member[]> {
-  const snap = await getDocs(query(membersCol(gymId), orderBy("createdAt", "desc")));
+  const snap = await getDocsPreferCache(query(membersCol(gymId), orderBy("createdAt", "desc")));
   return snap.docs.map((d) => toMember(d.id, d.data()));
 }
 
@@ -46,8 +47,8 @@ export async function getMember(gymId: string, memberId: string): Promise<Member
   if (!memberSnap.exists()) return null;
 
   const [waiversSnap, checkInsSnap] = await Promise.all([
-    getDocs(query(waiversCol(gymId, memberId), orderBy("signedAt", "desc"))),
-    getDocs(query(checkInsCol(gymId, memberId), orderBy("checkedInAt", "desc"), limit(20))),
+    getDocsPreferCache(query(waiversCol(gymId, memberId), orderBy("signedAt", "desc"))),
+    getDocsPreferCache(query(checkInsCol(gymId, memberId), orderBy("checkedInAt", "desc"), limit(20))),
   ]);
 
   const waivers: Waiver[] = waiversSnap.docs.map((d) => ({

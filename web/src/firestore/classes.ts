@@ -1,6 +1,5 @@
 import {
   addDoc,
-  getDocs,
   increment,
   orderBy,
   query,
@@ -10,6 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import { getDocsPreferCache } from "./cache";
 import { classesCol, classRef, bookingRef } from "./paths";
 import type { GymClass } from "./types";
 
@@ -23,7 +23,7 @@ export interface CreateClassInput {
 
 export async function listUpcomingClasses(gymId: string): Promise<GymClass[]> {
   const now = Timestamp.now();
-  const snap = await getDocs(
+  const snap = await getDocsPreferCache(
     query(classesCol(gymId), where("startsAt", ">=", now), orderBy("startsAt", "asc"))
   );
 

@@ -1,4 +1,4 @@
-import { addDoc, getDoc, getDocs, orderBy, query, serverTimestamp, where } from "firebase/firestore";
+import { addDoc, getDoc, orderBy, query, serverTimestamp, where } from "firebase/firestore";
 import { payersCol, payerRef, payerMemberLinksCol, memberRef } from "./paths";
 import { getDocsPreferCache } from "./cache";
 import type { Payer, PayerDetail } from "./types";
@@ -10,7 +10,7 @@ export interface CreatePayerInput {
 }
 
 export async function listPayers(gymId: string): Promise<Payer[]> {
-  const snap = await getDocs(query(payersCol(gymId), orderBy("createdAt", "desc")));
+  const snap = await getDocsPreferCache(query(payersCol(gymId), orderBy("createdAt", "desc")));
   return snap.docs.map((d) => ({
     id: d.id,
     fullName: d.data().fullName,
@@ -34,7 +34,7 @@ export async function getPayer(gymId: string, payerId: string): Promise<PayerDet
   const payerSnap = await getDoc(payerRef(gymId, payerId));
   if (!payerSnap.exists()) return null;
 
-  const linksSnap = await getDocs(query(payerMemberLinksCol(gymId), where("payerId", "==", payerId)));
+  const linksSnap = await getDocsPreferCache(query(payerMemberLinksCol(gymId), where("payerId", "==", payerId)));
   const memberLinks = await Promise.all(
     linksSnap.docs.map(async (linkDoc) => {
       const memberId = linkDoc.data().memberId as string;

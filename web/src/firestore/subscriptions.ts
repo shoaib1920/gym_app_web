@@ -1,4 +1,4 @@
-import { addDoc, getDocs, orderBy, query, serverTimestamp, Timestamp, where } from "firebase/firestore";
+import { addDoc, orderBy, query, serverTimestamp, Timestamp, where } from "firebase/firestore";
 import { subscriptionsCol } from "./paths";
 import { listPlans } from "./plans";
 import { listPayers } from "./payers";
@@ -101,7 +101,7 @@ export async function createImportedSubscription(gymId: string, input: ImportSub
  */
 export async function getFeeOverview(gymId: string): Promise<FeeOverview> {
   const [subsSnap, plans, payers] = await Promise.all([
-    getDocs(query(subscriptionsCol(gymId), orderBy("currentPeriodEnd", "desc"))),
+    getDocsPreferCache(query(subscriptionsCol(gymId), orderBy("currentPeriodEnd", "desc"))),
     listPlans(gymId),
     listPayers(gymId),
   ]);

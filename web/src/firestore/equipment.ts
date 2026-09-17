@@ -1,5 +1,6 @@
-import { addDoc, deleteDoc, getDocs, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, deleteDoc, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
 import { equipmentCol, equipmentRef } from "./paths";
+import { getDocsPreferCache } from "./cache";
 import type { Equipment, EquipmentCondition } from "./types";
 
 export interface CreateEquipmentInput {
@@ -10,7 +11,7 @@ export interface CreateEquipmentInput {
 }
 
 export async function listEquipment(gymId: string): Promise<Equipment[]> {
-  const snap = await getDocs(query(equipmentCol(gymId), orderBy("createdAt", "desc")));
+  const snap = await getDocsPreferCache(query(equipmentCol(gymId), orderBy("createdAt", "desc")));
   return snap.docs.map((d) => ({
     id: d.id,
     name: d.data().name,

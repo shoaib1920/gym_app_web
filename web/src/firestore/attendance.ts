@@ -1,5 +1,6 @@
-import { getDocs, query, where, orderBy, Timestamp } from "firebase/firestore";
+import { query, where, orderBy, Timestamp } from "firebase/firestore";
 import { attendanceLogCol } from "./paths";
+import { getDocsPreferCache } from "./cache";
 import type { AttendanceLogEntry } from "./types";
 
 function toEntry(id: string, data: any): AttendanceLogEntry {
@@ -18,7 +19,7 @@ function toEntry(id: string, data: any): AttendanceLogEntry {
  * same reasoning as the rest of this codebase's date-sorted queries.
  */
 export async function listAttendance(gymId: string, from: Date, to: Date): Promise<AttendanceLogEntry[]> {
-  const snap = await getDocs(
+  const snap = await getDocsPreferCache(
     query(
       attendanceLogCol(gymId),
       where("checkedInAt", ">=", Timestamp.fromDate(from)),
