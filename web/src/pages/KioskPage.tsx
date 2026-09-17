@@ -146,8 +146,8 @@ export default function KioskPage() {
                 <span className="text-lg text-on-surface capitalize">{result.data.status}</span>
               </div>
               <div className="flex justify-between py-xs">
-                <span className="text-lg text-on-surface-variant">Member since</span>
-                <span className="text-lg text-on-surface">{result.data.memberSince.toLocaleDateString()}</span>
+                <span className="text-lg text-on-surface-variant">Ending date</span>
+                <span className="text-lg text-on-surface">{result.data.endingDate ?? "—"}</span>
               </div>
             </div>
 

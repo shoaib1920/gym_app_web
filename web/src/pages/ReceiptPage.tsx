@@ -96,26 +96,30 @@ export default function ReceiptPage() {
           <span>Reg. #: {member.memberCode}</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-md text-sm mb-lg">
-          <div>
-            <p className="text-black font-bold uppercase text-xs">Member name</p>
-            <p className="font-semibold">{member.fullName}</p>
+        <div className="flex gap-lg text-sm mb-lg">
+          <div className="flex-1 space-y-sm">
+            <div>
+              <p className="text-black font-bold uppercase text-xs">Member name</p>
+              <p className="font-bold text-lg">{member.fullName}</p>
+            </div>
+            <div>
+              <p className="text-black font-bold uppercase text-xs">Gender</p>
+              <p className="font-semibold capitalize">{member.gender ?? "—"}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-black font-bold uppercase text-xs">Phone</p>
-            <p className="font-semibold">{member.phone ?? "—"}</p>
-          </div>
-          <div>
-            <p className="text-black font-bold uppercase text-xs">Gender</p>
-            <p className="font-semibold capitalize">{member.gender ?? "—"}</p>
-          </div>
-          <div>
-            <p className="text-black font-bold uppercase text-xs">Date of joining</p>
-            <p className="font-semibold">{member.joiningDate ?? "—"}</p>
-          </div>
-          <div>
-            <p className="text-black font-bold uppercase text-xs">Ending date</p>
-            <p className="font-semibold">{member.endingDate ?? "—"}</p>
+          <div className="flex-1 space-y-sm">
+            <div>
+              <p className="text-black font-bold uppercase text-xs">Phone</p>
+              <p className="font-semibold">{member.phone ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-black font-bold uppercase text-xs">Date of joining</p>
+              <p className="font-semibold">{member.joiningDate ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-black font-bold uppercase text-xs">Ending date</p>
+              <p className="font-semibold">{member.endingDate ?? "—"}</p>
+            </div>
           </div>
         </div>
 

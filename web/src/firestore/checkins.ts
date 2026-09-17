@@ -26,7 +26,7 @@ export interface KioskCheckInResult {
   memberCode: string;
   phone: string | null;
   status: Member["status"];
-  memberSince: Date;
+  endingDate: string | null;
   fee: KioskFeeStatus;
 }
 
@@ -158,7 +158,7 @@ export async function recordCheckInByCode(gymId: string, memberCode: string): Pr
     memberCode: data.memberCode ?? trimmed,
     phone: data.phone ?? null,
     status: data.status ?? "active",
-    memberSince: data.createdAt?.toDate?.() ?? new Date(),
+    endingDate: data.endingDate ?? null,
     fee,
   };
 }
